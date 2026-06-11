@@ -1,0 +1,8 @@
+@EndUserText.label: 'F1 Crisis Service'
+define service ZUI_RAP200_F1CC {
+  expose ZC_RAP200_CC_CASE  as CrisisCase;
+  expose ZC_RAP200_CC_FACT  as CrisisFactor;
+  expose ZC_RAP200_CC_OPT   as RecoveryOption;
+  expose ZC_RAP200_CC_LOG   as DecisionLog;
+  expose ZC_RAP200_CC_BOARD as DecisionBoard;
+}
