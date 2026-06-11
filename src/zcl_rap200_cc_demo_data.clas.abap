@@ -13,6 +13,7 @@ CLASS zcl_rap200_cc_demo_data IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA lv_case_uuid TYPE sysuuid_x16.
+    DATA lv_old_case_uuid TYPE sysuuid_x16.
 
     TRY.
         lv_case_uuid = cl_system_uuid=>create_uuid_x16_static( ).
@@ -21,16 +22,25 @@ CLASS zcl_rap200_cc_demo_data IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
+    GET TIME STAMP FIELD DATA(lv_timestamp).
+
+    DATA(lv_timestamp_text) = |{ lv_timestamp }|.
+
     out->write( 'F1 Crisis Command Center - Full DB Workflow Test' ).
     out->write( '------------------------------------------------' ).
 
+    SELECT SINGLE case_uuid
+      FROM zrap200_cc_case
+      WHERE case_id = 'CASE001'
+      INTO @lv_old_case_uuid.
+
+    IF lv_old_case_uuid IS NOT INITIAL.
+      DELETE FROM zrap200_cc_opt
+        WHERE case_uuid = @lv_old_case_uuid.
+    ENDIF.
+
     DELETE FROM zrap200_cc_case
       WHERE case_id = 'CASE001'.
-
-    DELETE FROM zrap200_cc_opt
-      WHERE option_id = 'OPT001'
-         OR option_id = 'OPT002'
-         OR option_id = 'OPT003'.
 
     DATA ls_case TYPE zrap200_cc_case.
 
@@ -43,7 +53,7 @@ CLASS zcl_rap200_cc_demo_data IMPLEMENTATION.
     ls_case-severity    = zcl_rap200_cc_constants=>gc_severity_high.
     ls_case-status      = zcl_rap200_cc_constants=>gc_status_open.
     ls_case-created_by  = sy-uname.
-    ls_case-created_at  = |{ sy-datum } { sy-uzeit }|.
+    ls_case-created_at  = lv_timestamp_text.
 
     INSERT zrap200_cc_case FROM @ls_case.
 
@@ -101,7 +111,7 @@ CLASS zcl_rap200_cc_demo_data IMPLEMENTATION.
           recommended_text        = @ls_recommendation-reason_text,
           status                  = 'RECOMMENDED',
           last_changed_by         = @sy-uname,
-          last_changed_at         = @( |{ sy-datum } { sy-uzeit }| )
+          last_changed_at         = @lv_timestamp_text
       WHERE case_uuid = @lv_case_uuid.
 
     out->write( |Created Case UUID: { lv_case_uuid }| ).

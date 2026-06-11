@@ -10,6 +10,12 @@ lock master
 
   field ( readonly, numbering : managed ) CaseUUID;
 
+  field ( readonly ) RecommendedOptionID,
+                     RecommendedOptionType,
+                     RecommendedScore,
+                     RecommendedRating,
+                     RecommendedText;
+
   action recommendBestOption result [1] $self;
 
   mapping for zrap200_cc_case
