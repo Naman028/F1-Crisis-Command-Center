@@ -10,8 +10,26 @@ lock master
 
   field ( readonly, numbering : managed ) CaseUUID;
 
+  action recommendBestOption result [1] $self;
+
   mapping for zrap200_cc_case
   {
-    CaseUUID = case_uuid;
+    CaseUUID              = case_uuid;
+    CaseID                = case_id;
+    CaseTitle             = case_title;
+    RaceID                = race_id;
+    RaceName              = race_name;
+    CrisisType            = crisis_type;
+    Severity              = severity;
+    Status                = status;
+    RecommendedOptionID   = recommended_option_id;
+    RecommendedOptionType = recommended_option_type;
+    RecommendedScore      = recommended_score;
+    RecommendedRating     = recommended_rating;
+    RecommendedText       = recommended_text;
+    CreatedBy             = created_by;
+    CreatedAt             = created_at;
+    LastChangedBy         = last_changed_by;
+    LastChangedAt         = last_changed_at;
   }
 }

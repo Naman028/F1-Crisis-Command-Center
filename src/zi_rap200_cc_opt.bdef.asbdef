@@ -1,0 +1,30 @@
+managed implementation in class zbp_i_rap200_cc_opt unique;
+
+define behavior for ZI_RAP200_CC_OPT alias RecoveryOption
+persistent table zrap200_cc_opt
+lock master
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly : update ) CaseUUID, OptionNo;
+  field ( readonly ) TotalScore, Rating, IsRecommended, ReasonText;
+
+  mapping for zrap200_cc_opt
+  {
+    CaseUUID         = case_uuid;
+    OptionNo         = option_no;
+    OptionID         = option_id;
+    OptionType       = option_type;
+    OptionText       = option_text;
+    CostScore        = cost_score;
+    TimeScore        = time_score;
+    RiskScore        = risk_score;
+    FeasibilityScore = feasibility_score;
+    TotalScore       = total_score;
+    Rating           = rating;
+    IsRecommended    = is_recommended;
+    ReasonText       = reason_text;
+  }
+}
