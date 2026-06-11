@@ -1,0 +1,19 @@
+CLASS zcl_rap200_cc_constants DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+
+    CONSTANTS gc_status_new    TYPE c LENGTH 20 VALUE 'NEW'.
+    CONSTANTS gc_status_open   TYPE c LENGTH 20 VALUE 'OPEN'.
+    CONSTANTS gc_status_closed TYPE c LENGTH 20 VALUE 'CLOSED'.
+
+    CONSTANTS gc_severity_low    TYPE c LENGTH 10 VALUE 'LOW'.
+    CONSTANTS gc_severity_medium TYPE c LENGTH 10 VALUE 'MEDIUM'.
+    CONSTANTS gc_severity_high   TYPE c LENGTH 10 VALUE 'HIGH'.
+
+ENDCLASS.
+
+CLASS zcl_rap200_cc_constants IMPLEMENTATION.
+ENDCLASS.
