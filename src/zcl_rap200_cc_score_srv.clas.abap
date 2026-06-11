@@ -6,6 +6,7 @@ CLASS zcl_rap200_cc_score_srv DEFINITION
   PUBLIC SECTION.
 
     TYPES ty_rating TYPE c LENGTH 20.
+    TYPES ty_case_uuid TYPE sysuuid_x16.
 
     TYPES: BEGIN OF ty_score_input,
              cost_score        TYPE i,
@@ -24,6 +25,10 @@ CLASS zcl_rap200_cc_score_srv DEFINITION
         is_input         TYPE ty_score_input
       RETURNING
         VALUE(rs_result) TYPE ty_score_result.
+
+    METHODS score_options_for_case
+      IMPORTING
+        iv_case_uuid TYPE ty_case_uuid.
 
   PRIVATE SECTION.
 
@@ -55,11 +60,6 @@ CLASS zcl_rap200_cc_score_srv IMPLEMENTATION.
       iv_score = is_input-feasibility_score
     ).
 
-    " Weighted decision score:
-    " Cost control = 20%
-    " Time impact = 30%
-    " Risk control = 25%
-    " Feasibility = 25%
     rs_result-total_score =
         ( lv_cost * 20
         + lv_time * 30
@@ -75,6 +75,41 @@ CLASS zcl_rap200_cc_score_srv IMPLEMENTATION.
     ELSE.
       rs_result-rating = 'WEAK'.
     ENDIF.
+
+  ENDMETHOD.
+
+  METHOD score_options_for_case.
+
+    SELECT
+      FROM zrap200_cc_opt
+      FIELDS
+        case_uuid,
+        option_no,
+        cost_score,
+        time_score,
+        risk_score,
+        feasibility_score
+      WHERE case_uuid = @iv_case_uuid
+      INTO TABLE @DATA(lt_options).
+
+    LOOP AT lt_options INTO DATA(ls_option).
+
+      DATA(ls_score) = calculate_total_score(
+        is_input = VALUE ty_score_input(
+          cost_score        = ls_option-cost_score
+          time_score        = ls_option-time_score
+          risk_score        = ls_option-risk_score
+          feasibility_score = ls_option-feasibility_score
+        )
+      ).
+
+      UPDATE zrap200_cc_opt
+        SET total_score = @ls_score-total_score,
+            rating      = @ls_score-rating
+        WHERE case_uuid = @ls_option-case_uuid
+          AND option_no = @ls_option-option_no.
+
+    ENDLOOP.
 
   ENDMETHOD.
 
