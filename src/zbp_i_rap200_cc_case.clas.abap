@@ -1,0 +1,10 @@
+CLASS zbp_i_rap200_cc_case DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR BEHAVIOR OF zi_rap200_cc_case.
+
+ENDCLASS.
+
+CLASS zbp_i_rap200_cc_case IMPLEMENTATION.
+ENDCLASS.

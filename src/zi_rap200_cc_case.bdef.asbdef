@@ -1,0 +1,17 @@
+managed implementation in class zbp_i_rap200_cc_case unique;
+
+define behavior for ZI_RAP200_CC_CASE alias CrisisCase
+persistent table zrap200_cc_case
+lock master
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly, numbering : managed ) CaseUUID;
+
+  mapping for zrap200_cc_case
+  {
+    CaseUUID = case_uuid;
+  }
+}
