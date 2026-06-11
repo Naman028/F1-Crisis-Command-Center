@@ -5,5 +5,19 @@ define view entity ZC_RAP200_CC_OPT
   as select from ZI_RAP200_CC_OPT
 {
   key CaseUUID,
-  key OptionNo
+  key OptionNo,
+
+  OptionID,
+  OptionType,
+  OptionText,
+
+  CostScore,
+  TimeScore,
+  RiskScore,
+  FeasibilityScore,
+  TotalScore,
+
+  Rating,
+  IsRecommended,
+  ReasonText
 }
