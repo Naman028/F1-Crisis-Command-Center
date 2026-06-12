@@ -61,7 +61,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
     DATA(lv_timestamp_text) = |{ lv_system_date DATE = ISO } { lv_system_time TIME = ISO }|.
 
-    DATA lt_update TYPE TABLE FOR UPDATE zi_rap200_cc_case\\CrisisCase.
+    DATA lt_update TYPE TABLE FOR UPDATE zi_rap200_cc_case.
 
     LOOP AT lt_cases INTO DATA(ls_case).
 
@@ -111,19 +111,19 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
   METHOD generateAndRecommendOptions.
 
+    DATA(lo_score_srv) = NEW zcl_rap200_cc_score_srv( ).
+
     READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
       ENTITY CrisisCase
-      FIELDS (
-        CaseUUID
-        CaseID
-        CaseTitle
-        RaceID
-        RaceName
-        CrisisType
-        Severity
-      )
+      ALL FIELDS
       WITH CORRESPONDING #( keys )
       RESULT DATA(lt_cases).
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase BY \_RecoveryOptions
+      ALL FIELDS
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_options).
 
     LOOP AT keys INTO DATA(ls_key).
 
@@ -134,267 +134,365 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      IF ls_case-CaseID IS INITIAL.
-        ls_case-CaseID = get_next_case_id( ).
-      ENDIF.
+      DATA(lv_has_options) = abap_false.
 
-      READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
-        ENTITY CrisisCase BY \_RecoveryOptions
-        FROM VALUE #(
-          (
-            %tky = ls_key-%tky
-          )
-        )
-        RESULT DATA(lt_old_options).
-
-      IF lt_old_options IS NOT INITIAL.
-
-        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
-          ENTITY RecoveryOption
-          DELETE FROM VALUE #(
-            FOR ls_old_option IN lt_old_options
-            (
-              %tky = ls_old_option-%tky
-            )
-          )
-          FAILED DATA(ls_failed_delete)
-          REPORTED DATA(ls_reported_delete).
-
-      ENDIF.
-
-      DATA lt_generated_options TYPE tt_generated_options.
-
-      DATA(lv_crisis_type) = to_upper( val = ls_case-CrisisType ).
-      DATA(lv_severity)    = to_upper( val = ls_case-Severity ).
-
-      DATA(lv_severity_boost) = 0.
-
-      CASE lv_severity.
-        WHEN 'CRITICAL'.
-          lv_severity_boost = 15.
-        WHEN 'HIGH'.
-          lv_severity_boost = 10.
-        WHEN 'MEDIUM'.
-          lv_severity_boost = 5.
-        WHEN OTHERS.
-          lv_severity_boost = 0.
-      ENDCASE.
-
-      CASE lv_crisis_type.
-
-        WHEN 'WEATHER'.
-
-          lt_generated_options = VALUE #(
-            (
-              option_no         = '001'
-              option_id         = 'OPT001'
-              option_type       = 'PITSTOP'
-              option_text       = |Weather response for { ls_case-RaceName }: immediate pit stop and tyre change|
-              cost_score        = 60
-              time_score        = 75 + lv_severity_boost
-              risk_score        = 80
-              feasibility_score = 70 + lv_severity_boost
-            )
-            (
-              option_no         = '002'
-              option_id         = 'OPT002'
-              option_type       = 'CONTINUE_RACE'
-              option_text       = |Weather response for { ls_case-RaceName }: continue race without stopping|
-              cost_score        = 90
-              time_score        = 85
-              risk_score        = 35 - lv_severity_boost
-              feasibility_score = 60
-            )
-            (
-              option_no         = '003'
-              option_id         = 'OPT003'
-              option_type       = 'STRATEGY_CHANGE'
-              option_text       = |Weather response for { ls_case-RaceName }: change strategy and manage pace|
-              cost_score        = 80
-              time_score        = 70 + lv_severity_boost
-              risk_score        = 75
-              feasibility_score = 85
-            )
-          ).
-
-        WHEN 'CRASH'.
-
-          lt_generated_options = VALUE #(
-            (
-              option_no         = '001'
-              option_id         = 'OPT001'
-              option_type       = 'REPAIR_COMPONENT'
-              option_text       = |Crash response for { ls_case-RaceName }: repair damaged component|
-              cost_score        = 75
-              time_score        = 55 - lv_severity_boost
-              risk_score        = 65
-              feasibility_score = 60
-            )
-            (
-              option_no         = '002'
-              option_id         = 'OPT002'
-              option_type       = 'USE_OLD_SPEC'
-              option_text       = |Crash response for { ls_case-RaceName }: use older approved specification|
-              cost_score        = 85
-              time_score        = 80
-              risk_score        = 70
-              feasibility_score = 85
-            )
-            (
-              option_no         = '003'
-              option_id         = 'OPT003'
-              option_type       = 'EMERGENCY_REBUILD'
-              option_text       = |Crash response for { ls_case-RaceName }: emergency rebuild before session deadline|
-              cost_score        = 45
-              time_score        = 70
-              risk_score        = 75
-              feasibility_score = 70 + lv_severity_boost
-            )
-          ).
-
-        WHEN 'LOGISTICS'.
-
-          lt_generated_options = VALUE #(
-            (
-              option_no         = '001'
-              option_id         = 'OPT001'
-              option_type       = 'EMERGENCY_SHIP'
-              option_text       = |Logistics response for { ls_case-RaceName }: emergency shipment of critical resource|
-              cost_score        = 45
-              time_score        = 90
-              risk_score        = 70
-              feasibility_score = 80
-            )
-            (
-              option_no         = '002'
-              option_id         = 'OPT002'
-              option_type       = 'USE_LOCAL_BACKUP'
-              option_text       = |Logistics response for { ls_case-RaceName }: use local backup resource|
-              cost_score        = 80
-              time_score        = 75
-              risk_score        = 65
-              feasibility_score = 75
-            )
-            (
-              option_no         = '003'
-              option_id         = 'OPT003'
-              option_type       = 'DELAY_UPGRADE'
-              option_text       = |Logistics response for { ls_case-RaceName }: delay upgrade package to reduce pressure|
-              cost_score        = 90
-              time_score        = 60
-              risk_score        = 85
-              feasibility_score = 90
-            )
-          ).
-
-        WHEN 'COMPLIANCE'.
-
-          lt_generated_options = VALUE #(
-            (
-              option_no         = '001'
-              option_id         = 'OPT001'
-              option_type       = 'USE_APPROVED_SPEC'
-              option_text       = |Compliance response for { ls_case-RaceName }: switch to approved specification|
-              cost_score        = 85
-              time_score        = 80
-              risk_score        = 90
-              feasibility_score = 90
-            )
-            (
-              option_no         = '002'
-              option_id         = 'OPT002'
-              option_type       = 'REQUEST_RECHECK'
-              option_text       = |Compliance response for { ls_case-RaceName }: request inspection re-check|
-              cost_score        = 70
-              time_score        = 55
-              risk_score        = 60
-              feasibility_score = 65
-            )
-            (
-              option_no         = '003'
-              option_id         = 'OPT003'
-              option_type       = 'ESCALATE_STEWARD'
-              option_text       = |Compliance response for { ls_case-RaceName }: escalate to race control/stewards|
-              cost_score        = 60
-              time_score        = 50
-              risk_score        = 75
-              feasibility_score = 60
-            )
-          ).
-
-        WHEN OTHERS.
-
-          lt_generated_options = VALUE #(
-            (
-              option_no         = '001'
-              option_id         = 'OPT001'
-              option_type       = 'STANDARD_RECOVERY'
-              option_text       = |Standard recovery for { ls_case-RaceName }|
-              cost_score        = 70
-              time_score        = 70
-              risk_score        = 70
-              feasibility_score = 70
-            )
-            (
-              option_no         = '002'
-              option_id         = 'OPT002'
-              option_type       = 'ESCALATE'
-              option_text       = |Escalate case for management decision|
-              cost_score        = 50
-              time_score        = 60
-              risk_score        = 80
-              feasibility_score = 75
-            )
-          ).
-
-      ENDCASE.
-
-      LOOP AT lt_generated_options ASSIGNING FIELD-SYMBOL(<ls_generated_option>).
-
-        calculate_score_for_option(
-          CHANGING
-            cs_option = <ls_generated_option>
-        ).
-
+      LOOP AT lt_existing_options INTO DATA(ls_existing_option)
+        WHERE CaseUUID = ls_case-CaseUUID.
+        lv_has_options = abap_true.
+        EXIT.
       ENDLOOP.
 
-      SORT lt_generated_options BY total_score DESCENDING.
-
-      READ TABLE lt_generated_options INTO DATA(ls_best_option) INDEX 1.
-
-      IF sy-subrc <> 0.
+      IF lv_has_options = abap_true.
         CONTINUE.
       ENDIF.
 
-      DATA(lv_reason_text) =
-        |Recommended option { ls_best_option-option_type } for { lv_crisis_type } crisis with score { ls_best_option-total_score }.|.
+      DATA(lv_crisis_type_for_create) = to_upper( val = ls_case-CrisisType ).
 
-      LOOP AT lt_generated_options ASSIGNING <ls_generated_option>.
+      IF lv_crisis_type_for_create = 'WEATHER'.
 
-        IF <ls_generated_option>-option_id = ls_best_option-option_id.
-          <ls_generated_option>-is_recommended = 'X'.
-          <ls_generated_option>-reason_text    = lv_reason_text.
-        ELSE.
-          <ls_generated_option>-is_recommended = ''.
-          <ls_generated_option>-reason_text    = ''.
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_RecoveryOptions
+          FIELDS (
+            OptionNo
+            OptionID
+            OptionType
+            OptionText
+            CostScore
+            TimeScore
+            RiskScore
+            FeasibilityScore
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_key-%tky
+              %target = VALUE #(
+                (
+                  %cid             = 'OPT001'
+                  OptionNo         = '001'
+                  OptionID         = 'OPT001'
+                  OptionType       = 'PITSTOP'
+                  OptionText       = |Weather response for { ls_case-RaceName }: immediate pit stop and tyre change|
+                  CostScore        = 60
+                  TimeScore        = 85
+                  RiskScore        = 80
+                  FeasibilityScore = 80
+                )
+                (
+                  %cid             = 'OPT002'
+                  OptionNo         = '002'
+                  OptionID         = 'OPT002'
+                  OptionType       = 'CONTINUE_RACE'
+                  OptionText       = |Weather response for { ls_case-RaceName }: continue race without stopping|
+                  CostScore        = 90
+                  TimeScore        = 85
+                  RiskScore        = 25
+                  FeasibilityScore = 60
+                )
+                (
+                  %cid             = 'OPT003'
+                  OptionNo         = '003'
+                  OptionID         = 'OPT003'
+                  OptionType       = 'STRATEGY_CHANGE'
+                  OptionText       = |Weather response for { ls_case-RaceName }: change strategy and manage pace|
+                  CostScore        = 80
+                  TimeScore        = 80
+                  RiskScore        = 75
+                  FeasibilityScore = 85
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_weather_create)
+          REPORTED DATA(ls_reported_weather_create).
+
+      ELSEIF lv_crisis_type_for_create = 'CRASH'.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_RecoveryOptions
+          FIELDS (
+            OptionNo
+            OptionID
+            OptionType
+            OptionText
+            CostScore
+            TimeScore
+            RiskScore
+            FeasibilityScore
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_key-%tky
+              %target = VALUE #(
+                (
+                  %cid             = 'OPT001'
+                  OptionNo         = '001'
+                  OptionID         = 'OPT001'
+                  OptionType       = 'REPAIR_COMPONENT'
+                  OptionText       = |Crash response for { ls_case-RaceName }: repair damaged component|
+                  CostScore        = 75
+                  TimeScore        = 40
+                  RiskScore        = 65
+                  FeasibilityScore = 60
+                )
+                (
+                  %cid             = 'OPT002'
+                  OptionNo         = '002'
+                  OptionID         = 'OPT002'
+                  OptionType       = 'USE_OLD_SPEC'
+                  OptionText       = |Crash response for { ls_case-RaceName }: use older approved specification|
+                  CostScore        = 85
+                  TimeScore        = 80
+                  RiskScore        = 70
+                  FeasibilityScore = 85
+                )
+                (
+                  %cid             = 'OPT003'
+                  OptionNo         = '003'
+                  OptionID         = 'OPT003'
+                  OptionType       = 'EMERGENCY_REBUILD'
+                  OptionText       = |Crash response for { ls_case-RaceName }: emergency rebuild before session deadline|
+                  CostScore        = 45
+                  TimeScore        = 70
+                  RiskScore        = 75
+                  FeasibilityScore = 85
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_crash_create)
+          REPORTED DATA(ls_reported_crash_create).
+
+      ELSEIF lv_crisis_type_for_create = 'LOGISTICS'.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_RecoveryOptions
+          FIELDS (
+            OptionNo
+            OptionID
+            OptionType
+            OptionText
+            CostScore
+            TimeScore
+            RiskScore
+            FeasibilityScore
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_key-%tky
+              %target = VALUE #(
+                (
+                  %cid             = 'OPT001'
+                  OptionNo         = '001'
+                  OptionID         = 'OPT001'
+                  OptionType       = 'EMERGENCY_SHIP'
+                  OptionText       = |Logistics response for { ls_case-RaceName }: emergency shipment of critical resource|
+                  CostScore        = 45
+                  TimeScore        = 90
+                  RiskScore        = 70
+                  FeasibilityScore = 80
+                )
+                (
+                  %cid             = 'OPT002'
+                  OptionNo         = '002'
+                  OptionID         = 'OPT002'
+                  OptionType       = 'USE_LOCAL_BACKUP'
+                  OptionText       = |Logistics response for { ls_case-RaceName }: use local backup resource|
+                  CostScore        = 80
+                  TimeScore        = 75
+                  RiskScore        = 65
+                  FeasibilityScore = 75
+                )
+                (
+                  %cid             = 'OPT003'
+                  OptionNo         = '003'
+                  OptionID         = 'OPT003'
+                  OptionType       = 'DELAY_UPGRADE'
+                  OptionText       = |Logistics response for { ls_case-RaceName }: delay upgrade package to reduce pressure|
+                  CostScore        = 90
+                  TimeScore        = 60
+                  RiskScore        = 85
+                  FeasibilityScore = 90
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_logistics_create)
+          REPORTED DATA(ls_reported_logistics_create).
+
+      ELSEIF lv_crisis_type_for_create = 'COMPLIANCE'.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_RecoveryOptions
+          FIELDS (
+            OptionNo
+            OptionID
+            OptionType
+            OptionText
+            CostScore
+            TimeScore
+            RiskScore
+            FeasibilityScore
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_key-%tky
+              %target = VALUE #(
+                (
+                  %cid             = 'OPT001'
+                  OptionNo         = '001'
+                  OptionID         = 'OPT001'
+                  OptionType       = 'USE_APPROVED_SPEC'
+                  OptionText       = |Compliance response for { ls_case-RaceName }: switch to approved specification|
+                  CostScore        = 85
+                  TimeScore        = 80
+                  RiskScore        = 90
+                  FeasibilityScore = 90
+                )
+                (
+                  %cid             = 'OPT002'
+                  OptionNo         = '002'
+                  OptionID         = 'OPT002'
+                  OptionType       = 'REQUEST_RECHECK'
+                  OptionText       = |Compliance response for { ls_case-RaceName }: request inspection re-check|
+                  CostScore        = 70
+                  TimeScore        = 55
+                  RiskScore        = 60
+                  FeasibilityScore = 65
+                )
+                (
+                  %cid             = 'OPT003'
+                  OptionNo         = '003'
+                  OptionID         = 'OPT003'
+                  OptionType       = 'ESCALATE_STEWARD'
+                  OptionText       = |Compliance response for { ls_case-RaceName }: escalate to race control/stewards|
+                  CostScore        = 60
+                  TimeScore        = 50
+                  RiskScore        = 75
+                  FeasibilityScore = 60
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_compliance_create)
+          REPORTED DATA(ls_reported_compliance_create).
+
+      ELSE.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_RecoveryOptions
+          FIELDS (
+            OptionNo
+            OptionID
+            OptionType
+            OptionText
+            CostScore
+            TimeScore
+            RiskScore
+            FeasibilityScore
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_key-%tky
+              %target = VALUE #(
+                (
+                  %cid             = 'OPT001'
+                  OptionNo         = '001'
+                  OptionID         = 'OPT001'
+                  OptionType       = 'STANDARD_RECOVERY'
+                  OptionText       = |Standard recovery for { ls_case-RaceName }|
+                  CostScore        = 70
+                  TimeScore        = 70
+                  RiskScore        = 70
+                  FeasibilityScore = 70
+                )
+                (
+                  %cid             = 'OPT002'
+                  OptionNo         = '002'
+                  OptionID         = 'OPT002'
+                  OptionType       = 'ESCALATE'
+                  OptionText       = |Escalate case for management decision|
+                  CostScore        = 50
+                  TimeScore        = 60
+                  RiskScore        = 80
+                  FeasibilityScore = 75
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_default_create)
+          REPORTED DATA(ls_reported_default_create).
+
+      ENDIF.
+
+    ENDLOOP.
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase BY \_RecoveryOptions
+      ALL FIELDS
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_reloaded_options).
+
+    LOOP AT lt_cases INTO DATA(ls_case_for_scoring).
+
+      DATA lv_best_score TYPE i VALUE -1.
+      DATA ls_best_option LIKE LINE OF lt_reloaded_options.
+      DATA ls_best_score_result TYPE zcl_rap200_cc_score_srv=>ty_score_result.
+
+      LOOP AT lt_reloaded_options INTO DATA(ls_option)
+        WHERE CaseUUID = ls_case_for_scoring-CaseUUID.
+
+        DATA(ls_score) = lo_score_srv->calculate_total_score(
+          is_input = VALUE zcl_rap200_cc_score_srv=>ty_score_input(
+            cost_score        = ls_option-CostScore
+            time_score        = ls_option-TimeScore
+            risk_score        = ls_option-RiskScore
+            feasibility_score = ls_option-FeasibilityScore
+          )
+        ).
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY RecoveryOption
+          UPDATE FIELDS (
+            TotalScore
+            Rating
+            IsRecommended
+            ReasonText
+          )
+          WITH VALUE #(
+            (
+              %tky          = ls_option-%tky
+              TotalScore    = ls_score-total_score
+              Rating        = ls_score-rating
+              IsRecommended = ''
+              ReasonText    = ''
+            )
+          )
+          FAILED DATA(ls_failed_score_update)
+          REPORTED DATA(ls_reported_score_update).
+
+        IF ls_score-total_score > lv_best_score.
+          lv_best_score        = ls_score-total_score.
+          ls_best_option       = ls_option.
+          ls_best_score_result = ls_score.
         ENDIF.
 
       ENDLOOP.
 
-      SORT lt_generated_options BY option_no ASCENDING.
+      IF lv_best_score < 0.
+        CONTINUE.
+      ENDIF.
+
+      DATA(lv_reason_text) =
+        |Recommended option { ls_best_option-OptionType } for { ls_case_for_scoring-CrisisType } crisis with score { ls_best_score_result-total_score }.|.
 
       MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
-        ENTITY CrisisCase
-        CREATE BY \_RecoveryOptions
-        FIELDS (
-          OptionNo
-          OptionID
-          OptionType
-          OptionText
-          CostScore
-          TimeScore
-          RiskScore
-          FeasibilityScore
+        ENTITY RecoveryOption
+        UPDATE FIELDS (
           TotalScore
           Rating
           IsRecommended
@@ -402,65 +500,39 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         )
         WITH VALUE #(
           (
-            %tky = ls_key-%tky
-            %target = VALUE #(
-              FOR ls_generated_option IN lt_generated_options
-              (
-                %cid             = CONV #( ls_generated_option-option_id )
-                OptionNo         = ls_generated_option-option_no
-                OptionID         = ls_generated_option-option_id
-                OptionType       = ls_generated_option-option_type
-                OptionText       = ls_generated_option-option_text
-                CostScore        = ls_generated_option-cost_score
-                TimeScore        = ls_generated_option-time_score
-                RiskScore        = ls_generated_option-risk_score
-                FeasibilityScore = ls_generated_option-feasibility_score
-                TotalScore       = ls_generated_option-total_score
-                Rating           = ls_generated_option-rating
-                IsRecommended    = ls_generated_option-is_recommended
-                ReasonText       = ls_generated_option-reason_text
-              )
-            )
+            %tky          = ls_best_option-%tky
+            TotalScore    = ls_best_score_result-total_score
+            Rating        = ls_best_score_result-rating
+            IsRecommended = 'X'
+            ReasonText    = lv_reason_text
           )
         )
-        FAILED DATA(ls_failed_create)
-        REPORTED DATA(ls_reported_create).
-
-      DATA(lv_system_date_update) = cl_abap_context_info=>get_system_date( ).
-      DATA(lv_system_time_update) = cl_abap_context_info=>get_system_time( ).
-      DATA(lv_user_update)        = cl_abap_context_info=>get_user_technical_name( ).
-
-      DATA(lv_timestamp_text_update) = |{ lv_system_date_update DATE = ISO } { lv_system_time_update TIME = ISO }|.
+        FAILED DATA(ls_failed_best_update)
+        REPORTED DATA(ls_reported_best_update).
 
       MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
         ENTITY CrisisCase
         UPDATE FIELDS (
-          CaseID
           RecommendedOptionID
           RecommendedOptionType
           RecommendedScore
           RecommendedRating
           RecommendedText
           Status
-          LastChangedBy
-          LastChangedAt
         )
         WITH VALUE #(
           (
-            %tky                  = ls_key-%tky
-            CaseID                = ls_case-CaseID
-            RecommendedOptionID   = ls_best_option-option_id
-            RecommendedOptionType = ls_best_option-option_type
-            RecommendedScore      = ls_best_option-total_score
-            RecommendedRating     = ls_best_option-rating
+            %tky                  = ls_case_for_scoring-%tky
+            RecommendedOptionID   = ls_best_option-OptionID
+            RecommendedOptionType = ls_best_option-OptionType
+            RecommendedScore      = ls_best_score_result-total_score
+            RecommendedRating     = ls_best_score_result-rating
             RecommendedText       = lv_reason_text
             Status                = 'RECOMMENDED'
-            LastChangedBy         = lv_user_update
-            LastChangedAt         = lv_timestamp_text_update
           )
         )
-        FAILED DATA(ls_failed_update)
-        REPORTED DATA(ls_reported_update).
+        FAILED DATA(ls_failed_case_update)
+        REPORTED DATA(ls_reported_case_update).
 
     ENDLOOP.
 

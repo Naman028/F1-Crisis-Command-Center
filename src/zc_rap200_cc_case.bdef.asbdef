@@ -20,5 +20,7 @@ define behavior for ZC_RAP200_CC_CASE alias CrisisCase
 
 define behavior for ZC_RAP200_CC_OPT alias RecoveryOption
 {
+  use update;
+
   use association _CrisisCase { with draft; }
 }
