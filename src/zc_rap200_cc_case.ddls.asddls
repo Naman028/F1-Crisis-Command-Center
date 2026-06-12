@@ -25,5 +25,7 @@ define root view entity ZC_RAP200_CC_CASE
   CreatedAt,
   LastChangedBy,
   LastChangedAt,
-  LocalLastChangedAt
+  LocalLastChangedAt,
+
+  _RecoveryOptions : redirected to composition child ZC_RAP200_CC_OPT
 }

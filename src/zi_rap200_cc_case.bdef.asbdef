@@ -3,23 +3,29 @@ managed implementation in class zbp_i_rap200_cc_case unique;
 define behavior for ZI_RAP200_CC_CASE alias CrisisCase
 persistent table zrap200_cc_case
 lock master
+etag master LocalLastChangedAt
 {
   create;
   update;
   delete;
 
+  association _RecoveryOptions;
+
   field ( readonly, numbering : managed ) CaseUUID;
 
-  field ( readonly ) RecommendedOptionID,
-                     RecommendedOptionType,
-                     RecommendedScore,
-                     RecommendedRating,
-                     RecommendedText,
-                     CreatedBy,
-                     CreatedAt,
-                     LastChangedBy,
-                     LastChangedAt,
-                     LocalLastChangedAt;
+  field ( readonly )
+    CaseID,
+    Status,
+    RecommendedOptionID,
+    RecommendedOptionType,
+    RecommendedScore,
+    RecommendedRating,
+    RecommendedText,
+    CreatedBy,
+    CreatedAt,
+    LastChangedBy,
+    LastChangedAt,
+    LocalLastChangedAt;
 
   action generateAndRecommendOptions result [1] $self;
 
@@ -43,5 +49,44 @@ lock master
     LastChangedBy         = last_changed_by;
     LastChangedAt         = last_changed_at;
     LocalLastChangedAt    = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_RAP200_CC_OPT alias RecoveryOption
+persistent table zrap200_cc_opt
+lock dependent by _CrisisCase
+{
+  field ( readonly )
+    CaseUUID,
+    OptionNo,
+    OptionID,
+    OptionType,
+    OptionText,
+    CostScore,
+    TimeScore,
+    RiskScore,
+    FeasibilityScore,
+    TotalScore,
+    Rating,
+    IsRecommended,
+    ReasonText;
+
+  association _CrisisCase;
+
+  mapping for zrap200_cc_opt
+  {
+    CaseUUID         = case_uuid;
+    OptionNo         = option_no;
+    OptionID         = option_id;
+    OptionType       = option_type;
+    OptionText       = option_text;
+    CostScore        = cost_score;
+    TimeScore        = time_score;
+    RiskScore        = risk_score;
+    FeasibilityScore = feasibility_score;
+    TotalScore       = total_score;
+    Rating           = rating;
+    IsRecommended    = is_recommended;
+    ReasonText       = reason_text;
   }
 }

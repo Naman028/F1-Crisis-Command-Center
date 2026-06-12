@@ -6,7 +6,9 @@
 "ZRAP200_CC_CASE"
 ],
 "ASSOCIATED":
-[],
+[
+"ZI_RAP200_CC_OPT"
+],
 "BASE":
 [],
 "ANNO_REF":

@@ -2,6 +2,7 @@
 @EndUserText.label: 'F1 Crisis Case Interface View'
 define root view entity ZI_RAP200_CC_CASE
   as select from zrap200_cc_case
+  composition [0..*] of ZI_RAP200_CC_OPT as _RecoveryOptions
 {
   key case_uuid as CaseUUID,
 
@@ -23,5 +24,7 @@ define root view entity ZI_RAP200_CC_CASE
   created_at as CreatedAt,
   last_changed_by as LastChangedBy,
   last_changed_at as LastChangedAt,
-  local_last_changed_at as LocalLastChangedAt
+  local_last_changed_at as LocalLastChangedAt,
+
+  _RecoveryOptions
 }

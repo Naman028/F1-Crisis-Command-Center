@@ -1,0 +1,74 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Recovery Option',
+  typeNamePlural: 'Recovery Options',
+  title: {
+    type: #STANDARD,
+    value: 'OptionID'
+  },
+  description: {
+    value: 'OptionType'
+  }
+}
+
+annotate view ZC_RAP200_CC_OPT with
+{
+  @UI.facet: [
+    {
+      id: 'OptionDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Recovery Option Details',
+      position: 10
+    }
+  ]
+
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.identification: [{ position: 10 }]
+  OptionNo;
+
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.identification: [{ position: 20 }]
+  OptionID;
+
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.identification: [{ position: 30 }]
+  OptionType;
+
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  OptionText;
+
+  @UI.lineItem: [{ position: 50 }]
+  @UI.identification: [{ position: 50 }]
+  CostScore;
+
+  @UI.lineItem: [{ position: 60 }]
+  @UI.identification: [{ position: 60 }]
+  TimeScore;
+
+  @UI.lineItem: [{ position: 70 }]
+  @UI.identification: [{ position: 70 }]
+  RiskScore;
+
+  @UI.lineItem: [{ position: 80 }]
+  @UI.identification: [{ position: 80 }]
+  FeasibilityScore;
+
+  @UI.lineItem: [{ position: 90, importance: #HIGH }]
+  @UI.identification: [{ position: 90 }]
+  TotalScore;
+
+  @UI.lineItem: [{ position: 100, importance: #HIGH }]
+  @UI.identification: [{ position: 100 }]
+  Rating;
+
+  @UI.lineItem: [{ position: 110, importance: #HIGH }]
+  @UI.identification: [{ position: 110 }]
+  IsRecommended;
+
+  @UI.lineItem: [{ position: 120 }]
+  @UI.identification: [{ position: 120 }]
+  ReasonText;
+}

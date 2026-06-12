@@ -1,0 +1,101 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Crisis Case',
+  typeNamePlural: 'Crisis Cases',
+  title: {
+    type: #STANDARD,
+    value: 'CaseID'
+  },
+  description: {
+    value: 'CaseTitle'
+  }
+}
+
+annotate view ZC_RAP200_CC_CASE with
+{
+  @UI.facet: [
+    {
+      id: 'CrisisDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Crisis Details',
+      position: 10
+    },
+    {
+      id: 'Recommendation',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Recommendation',
+      targetQualifier: 'Recommendation',
+      position: 20
+    },
+    {
+      id: 'RecoveryOptions',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Generated Recovery Options',
+      targetElement: '_RecoveryOptions',
+      position: 30
+    }
+  ]
+
+  @UI.lineItem: [
+    { position: 10, importance: #HIGH },
+    {
+      type: #FOR_ACTION,
+      dataAction: 'generateAndRecommendOptions',
+      label: 'Generate Recommendation'
+    }
+  ]
+  @UI.identification: [
+    { position: 10 },
+    {
+      type: #FOR_ACTION,
+      dataAction: 'generateAndRecommendOptions',
+      label: 'Generate Recommendation'
+    }
+  ]
+  @UI.selectionField: [{ position: 10 }]
+  CaseID;
+
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.identification: [{ position: 20 }]
+  @UI.selectionField: [{ position: 20 }]
+  CaseTitle;
+
+  @UI.lineItem: [{ position: 30 }]
+  @UI.identification: [{ position: 30 }]
+  @UI.selectionField: [{ position: 30 }]
+  CrisisType;
+
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  @UI.selectionField: [{ position: 40 }]
+  Severity;
+
+  @UI.lineItem: [{ position: 50 }]
+  @UI.identification: [{ position: 50 }]
+  Status;
+
+  @UI.identification: [{ position: 60 }]
+  RaceID;
+
+  @UI.identification: [{ position: 70 }]
+  RaceName;
+
+  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 10 }]
+  RecommendedOptionID;
+
+  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 20 }]
+  RecommendedOptionType;
+
+  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 30 }]
+  RecommendedScore;
+
+  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 40 }]
+  RecommendedRating;
+
+  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 50 }]
+  RecommendedText;
+}
