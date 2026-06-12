@@ -24,5 +24,6 @@ define root view entity ZC_RAP200_CC_CASE
   CreatedBy,
   CreatedAt,
   LastChangedBy,
-  LastChangedAt
+  LastChangedAt,
+  LocalLastChangedAt
 }

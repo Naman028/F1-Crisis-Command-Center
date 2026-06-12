@@ -14,9 +14,14 @@ lock master
                      RecommendedOptionType,
                      RecommendedScore,
                      RecommendedRating,
-                     RecommendedText;
+                     RecommendedText,
+                     CreatedBy,
+                     CreatedAt,
+                     LastChangedBy,
+                     LastChangedAt,
+                     LocalLastChangedAt;
 
-  action recommendBestOption result [1] $self;
+  action generateAndRecommendOptions result [1] $self;
 
   mapping for zrap200_cc_case
   {
@@ -37,5 +42,6 @@ lock master
     CreatedAt             = created_at;
     LastChangedBy         = last_changed_by;
     LastChangedAt         = last_changed_at;
+    LocalLastChangedAt    = local_last_changed_at;
   }
 }

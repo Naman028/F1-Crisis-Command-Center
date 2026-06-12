@@ -1,16 +1,16 @@
 CLASS lhc_CrisisCase DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS recommendBestOption
+    METHODS generateAndRecommendOptions
       FOR MODIFY
-      IMPORTING keys FOR ACTION CrisisCase~recommendBestOption
+      IMPORTING keys FOR ACTION CrisisCase~generateAndRecommendOptions
       RESULT result.
 
 ENDCLASS.
 
 CLASS lhc_CrisisCase IMPLEMENTATION.
 
-  METHOD recommendBestOption.
+  METHOD generateAndRecommendOptions.
 
     LOOP AT keys INTO DATA(ls_key).
 
