@@ -1,15 +1,25 @@
 managed implementation in class zbp_i_rap200_cc_case unique;
+with draft;
 
 define behavior for ZI_RAP200_CC_CASE alias CrisisCase
 persistent table zrap200_cc_case
-lock master
+draft table zrap200_cc_cased
+lock master total etag LocalLastChangedAt
 etag master LocalLastChangedAt
 {
   create;
   update;
   delete;
 
-  association _RecoveryOptions { create; }
+  association _RecoveryOptions { create; with draft; }
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  determination setInitialCaseData on modify { create; }
 
   field ( readonly, numbering : managed ) CaseUUID;
 
@@ -27,7 +37,7 @@ etag master LocalLastChangedAt
     LastChangedAt,
     LocalLastChangedAt;
 
-  action generateAndRecommendOptions result [1] $self;
+  action generateAndRecommendOptions result [1] entity ZI_RAP200_CC_CASE;
 
   mapping for zrap200_cc_case
   {
@@ -54,7 +64,9 @@ etag master LocalLastChangedAt
 
 define behavior for ZI_RAP200_CC_OPT alias RecoveryOption
 persistent table zrap200_cc_opt
+draft table zrap200_cc_optd
 lock dependent by _CrisisCase
+etag dependent by _CrisisCase
 {
   update;
   delete;
@@ -63,7 +75,13 @@ lock dependent by _CrisisCase
     CaseUUID,
     OptionNo;
 
-  association _CrisisCase;
+  field ( readonly )
+    TotalScore,
+    Rating,
+    IsRecommended,
+    ReasonText;
+
+  association _CrisisCase { with draft; }
 
   mapping for zrap200_cc_opt
   {

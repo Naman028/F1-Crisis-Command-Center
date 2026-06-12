@@ -16,86 +16,234 @@ annotate view ZC_RAP200_CC_CASE with
 {
   @UI.facet: [
     {
-      id: 'CrisisDetails',
+      id: 'CrisisDetailsFacet',
       purpose: #STANDARD,
-      type: #IDENTIFICATION_REFERENCE,
+      type: #FIELDGROUP_REFERENCE,
       label: 'Crisis Details',
-      position: 10
+      position: 10,
+      targetQualifier: 'CrisisDetails'
     },
     {
-      id: 'Recommendation',
+      id: 'RecommendationFacet',
       purpose: #STANDARD,
       type: #FIELDGROUP_REFERENCE,
       label: 'Recommendation',
-      targetQualifier: 'Recommendation',
-      position: 20
+      position: 20,
+      targetQualifier: 'Recommendation'
     },
     {
-      id: 'RecoveryOptions',
+      id: 'RecoveryOptionsFacet',
       purpose: #STANDARD,
       type: #LINEITEM_REFERENCE,
       label: 'Generated Recovery Options',
-      targetElement: '_RecoveryOptions',
-      position: 30
+      position: 30,
+      targetElement: '_RecoveryOptions'
     }
   ]
 
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Case ID'
   @UI.lineItem: [
-    { position: 10, importance: #HIGH },
     {
+      position: 10,
+      label: 'Case ID'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 10
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 10,
+      label: 'Case ID'
+    }
+  ]
+  CaseID;
+
+  @EndUserText.label: 'Case Title'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Case Title'
+    },
+    {
+      position: 90,
       type: #FOR_ACTION,
       dataAction: 'generateAndRecommendOptions',
       label: 'Generate Recommendation'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 20
     }
   ]
   @UI.identification: [
-    { position: 10 },
     {
+      position: 10,
+      label: 'Case Title'
+    },
+    {
+      position: 90,
       type: #FOR_ACTION,
       dataAction: 'generateAndRecommendOptions',
       label: 'Generate Recommendation'
     }
   ]
-  @UI.selectionField: [{ position: 10 }]
-  CaseID;
-
-  @UI.lineItem: [{ position: 20, importance: #HIGH }]
-  @UI.identification: [{ position: 20 }]
-  @UI.selectionField: [{ position: 20 }]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 20,
+      label: 'Case Title'
+    }
+  ]
   CaseTitle;
 
-  @UI.lineItem: [{ position: 30 }]
-  @UI.identification: [{ position: 30 }]
-  @UI.selectionField: [{ position: 30 }]
-  CrisisType;
-
-  @UI.lineItem: [{ position: 40 }]
-  @UI.identification: [{ position: 40 }]
-  @UI.selectionField: [{ position: 40 }]
-  Severity;
-
-  @UI.lineItem: [{ position: 50 }]
-  @UI.identification: [{ position: 50 }]
-  Status;
-
-  @UI.identification: [{ position: 60 }]
+  @EndUserText.label: 'Race ID'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 30,
+      label: 'Race ID'
+    }
+  ]
   RaceID;
 
-  @UI.identification: [{ position: 70 }]
+  @EndUserText.label: 'Race Name'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 40,
+      label: 'Race Name'
+    }
+  ]
   RaceName;
 
-  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 10 }]
+  @EndUserText.label: 'Crisis Type'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Crisis Type'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 30
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 50,
+      label: 'Crisis Type'
+    }
+  ]
+  CrisisType;
+
+  @EndUserText.label: 'Severity'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Severity'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 40
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 60,
+      label: 'Severity'
+    }
+  ]
+  Severity;
+
+  @EndUserText.label: 'Status'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Status'
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 70,
+      label: 'Status'
+    }
+  ]
+  Status;
+
+  @EndUserText.label: 'Recommended Option ID'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 10,
+      label: 'Recommended Option ID'
+    }
+  ]
   RecommendedOptionID;
 
-  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 20 }]
+  @EndUserText.label: 'Recommended Option Type'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 20,
+      label: 'Recommended Option Type'
+    }
+  ]
   RecommendedOptionType;
 
-  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 30 }]
+  @EndUserText.label: 'Recommended Score'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 30,
+      label: 'Recommended Score'
+    }
+  ]
   RecommendedScore;
 
-  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 40 }]
+  @EndUserText.label: 'Recommended Rating'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 40,
+      label: 'Recommended Rating'
+    }
+  ]
   RecommendedRating;
 
-  @UI.fieldGroup: [{ qualifier: 'Recommendation', position: 50 }]
+  @EndUserText.label: 'Recommended Text'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 50,
+      label: 'Recommended Text'
+    }
+  ]
   RecommendedText;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
 }

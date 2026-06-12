@@ -1,4 +1,5 @@
 projection;
+use draft;
 
 define behavior for ZC_RAP200_CC_CASE alias CrisisCase
 {
@@ -6,15 +7,18 @@ define behavior for ZC_RAP200_CC_CASE alias CrisisCase
   use update;
   use delete;
 
-  use association _RecoveryOptions { create; }
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use association _RecoveryOptions { with draft; }
 
   use action generateAndRecommendOptions;
 }
 
 define behavior for ZC_RAP200_CC_OPT alias RecoveryOption
 {
-  use update;
-  use delete;
-
-  use association _CrisisCase;
+  use association _CrisisCase { with draft; }
 }

@@ -23,14 +23,91 @@ CLASS lhc_CrisisCase DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING keys FOR ACTION CrisisCase~generateAndRecommendOptions
       RESULT result.
 
+    METHODS setInitialCaseData
+      FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR CrisisCase~setInitialCaseData.
+
     METHODS calculate_score_for_option
       CHANGING
         cs_option TYPE ty_generated_option.
+
+    METHODS get_next_case_id
+      RETURNING
+        VALUE(rv_case_id) TYPE zrap200_cc_case-case_id.
 
 ENDCLASS.
 
 
 CLASS lhc_CrisisCase IMPLEMENTATION.
+
+  METHOD setInitialCaseData.
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase
+      FIELDS (
+        CaseID
+        Status
+        CreatedBy
+        CreatedAt
+        LastChangedBy
+        LastChangedAt
+      )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_cases).
+
+    DATA(lv_system_date) = cl_abap_context_info=>get_system_date( ).
+    DATA(lv_system_time) = cl_abap_context_info=>get_system_time( ).
+    DATA(lv_user)        = cl_abap_context_info=>get_user_technical_name( ).
+
+    DATA(lv_timestamp_text) = |{ lv_system_date DATE = ISO } { lv_system_time TIME = ISO }|.
+
+    DATA lt_update TYPE TABLE FOR UPDATE zi_rap200_cc_case\\CrisisCase.
+
+    LOOP AT lt_cases INTO DATA(ls_case).
+
+      DATA(lv_case_id) = ls_case-CaseID.
+      DATA(lv_status)  = ls_case-Status.
+
+      IF lv_case_id IS INITIAL.
+        lv_case_id = get_next_case_id( ).
+      ENDIF.
+
+      IF lv_status IS INITIAL.
+        lv_status = 'OPEN'.
+      ENDIF.
+
+      APPEND VALUE #(
+        %tky          = ls_case-%tky
+        CaseID        = lv_case_id
+        Status        = lv_status
+        CreatedBy     = lv_user
+        CreatedAt     = lv_timestamp_text
+        LastChangedBy = lv_user
+        LastChangedAt = lv_timestamp_text
+      ) TO lt_update.
+
+    ENDLOOP.
+
+    IF lt_update IS NOT INITIAL.
+
+      MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+        ENTITY CrisisCase
+        UPDATE FIELDS (
+          CaseID
+          Status
+          CreatedBy
+          CreatedAt
+          LastChangedBy
+          LastChangedAt
+        )
+        WITH lt_update
+        FAILED DATA(ls_failed_initial)
+        REPORTED DATA(ls_reported_initial).
+
+    ENDIF.
+
+  ENDMETHOD.
+
 
   METHOD generateAndRecommendOptions.
 
@@ -57,6 +134,10 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
+      IF ls_case-CaseID IS INITIAL.
+        ls_case-CaseID = get_next_case_id( ).
+      ENDIF.
+
       READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
         ENTITY CrisisCase BY \_RecoveryOptions
         FROM VALUE #(
@@ -76,16 +157,19 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
               %tky = ls_old_option-%tky
             )
           )
-          FAILED failed
-          REPORTED reported.
+          FAILED DATA(ls_failed_delete)
+          REPORTED DATA(ls_reported_delete).
 
       ENDIF.
 
       DATA lt_generated_options TYPE tt_generated_options.
 
+      DATA(lv_crisis_type) = to_upper( val = ls_case-CrisisType ).
+      DATA(lv_severity)    = to_upper( val = ls_case-Severity ).
+
       DATA(lv_severity_boost) = 0.
 
-      CASE ls_case-Severity.
+      CASE lv_severity.
         WHEN 'CRITICAL'.
           lv_severity_boost = 15.
         WHEN 'HIGH'.
@@ -96,7 +180,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
           lv_severity_boost = 0.
       ENDCASE.
 
-      CASE ls_case-CrisisType.
+      CASE lv_crisis_type.
 
         WHEN 'WEATHER'.
 
@@ -255,7 +339,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
               option_no         = '002'
               option_id         = 'OPT002'
               option_type       = 'ESCALATE'
-              option_text       = |Escalate { ls_case-CaseID } for management decision|
+              option_text       = |Escalate case for management decision|
               cost_score        = 50
               time_score        = 60
               risk_score        = 80
@@ -266,10 +350,12 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       ENDCASE.
 
       LOOP AT lt_generated_options ASSIGNING FIELD-SYMBOL(<ls_generated_option>).
+
         calculate_score_for_option(
           CHANGING
             cs_option = <ls_generated_option>
         ).
+
       ENDLOOP.
 
       SORT lt_generated_options BY total_score DESCENDING.
@@ -281,16 +367,16 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       ENDIF.
 
       DATA(lv_reason_text) =
-        |Recommended option { ls_best_option-option_type } for { ls_case-CrisisType } crisis with score { ls_best_option-total_score }.|.
+        |Recommended option { ls_best_option-option_type } for { lv_crisis_type } crisis with score { ls_best_option-total_score }.|.
 
       LOOP AT lt_generated_options ASSIGNING <ls_generated_option>.
 
         IF <ls_generated_option>-option_id = ls_best_option-option_id.
           <ls_generated_option>-is_recommended = 'X'.
-          <ls_generated_option>-reason_text = lv_reason_text.
+          <ls_generated_option>-reason_text    = lv_reason_text.
         ELSE.
           <ls_generated_option>-is_recommended = ''.
-          <ls_generated_option>-reason_text = ''.
+          <ls_generated_option>-reason_text    = ''.
         ENDIF.
 
       ENDLOOP.
@@ -337,32 +423,44 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
             )
           )
         )
-        FAILED failed
-        REPORTED reported.
+        FAILED DATA(ls_failed_create)
+        REPORTED DATA(ls_reported_create).
+
+      DATA(lv_system_date_update) = cl_abap_context_info=>get_system_date( ).
+      DATA(lv_system_time_update) = cl_abap_context_info=>get_system_time( ).
+      DATA(lv_user_update)        = cl_abap_context_info=>get_user_technical_name( ).
+
+      DATA(lv_timestamp_text_update) = |{ lv_system_date_update DATE = ISO } { lv_system_time_update TIME = ISO }|.
 
       MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
         ENTITY CrisisCase
         UPDATE FIELDS (
+          CaseID
           RecommendedOptionID
           RecommendedOptionType
           RecommendedScore
           RecommendedRating
           RecommendedText
           Status
+          LastChangedBy
+          LastChangedAt
         )
         WITH VALUE #(
           (
             %tky                  = ls_key-%tky
+            CaseID                = ls_case-CaseID
             RecommendedOptionID   = ls_best_option-option_id
             RecommendedOptionType = ls_best_option-option_type
             RecommendedScore      = ls_best_option-total_score
             RecommendedRating     = ls_best_option-rating
             RecommendedText       = lv_reason_text
             Status                = 'RECOMMENDED'
+            LastChangedBy         = lv_user_update
+            LastChangedAt         = lv_timestamp_text_update
           )
         )
-        FAILED failed
-        REPORTED reported.
+        FAILED DATA(ls_failed_update)
+        REPORTED DATA(ls_reported_update).
 
     ENDLOOP.
 
@@ -398,6 +496,50 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
     cs_option-total_score = ls_score-total_score.
     cs_option-rating      = ls_score-rating.
+
+  ENDMETHOD.
+
+
+  METHOD get_next_case_id.
+
+    DATA lv_max_number  TYPE i VALUE 0.
+    DATA lv_id_text     TYPE string.
+    DATA lv_number_text TYPE string.
+    DATA lv_number      TYPE i.
+
+    SELECT
+      FROM zrap200_cc_case
+      FIELDS case_id
+      WHERE case_id LIKE 'CASE%'
+      INTO TABLE @DATA(lt_active_ids).
+
+    LOOP AT lt_active_ids INTO DATA(ls_active_id).
+
+      lv_id_text = CONV string( ls_active_id-case_id ).
+      CONDENSE lv_id_text NO-GAPS.
+
+      IF strlen( lv_id_text ) > 4
+         AND substring( val = lv_id_text off = 0 len = 4 ) = 'CASE'.
+
+        lv_number_text = substring( val = lv_id_text off = 4 ).
+
+        TRY.
+            lv_number = CONV i( lv_number_text ).
+
+            IF lv_number > lv_max_number.
+              lv_max_number = lv_number.
+            ENDIF.
+
+          CATCH cx_sy_conversion_no_number.
+        ENDTRY.
+
+      ENDIF.
+
+    ENDLOOP.
+
+    lv_max_number = lv_max_number + 1.
+
+    rv_case_id = |CASE{ lv_max_number WIDTH = 3 ALIGN = RIGHT PAD = '0' }|.
 
   ENDMETHOD.
 
