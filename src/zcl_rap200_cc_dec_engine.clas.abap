@@ -41,6 +41,12 @@ CLASS zcl_rap200_cc_dec_engine DEFINITION
       RETURNING
         VALUE(rs_recommendation) TYPE ty_recommendation.
 
+    METHODS generate_recommend_for_case
+      IMPORTING
+        iv_case_uuid             TYPE ty_case_uuid
+      RETURNING
+        VALUE(rs_recommendation) TYPE ty_recommendation.
+
 ENDCLASS.
 
 CLASS zcl_rap200_cc_dec_engine IMPLEMENTATION.
@@ -121,6 +127,102 @@ CLASS zcl_rap200_cc_dec_engine IMPLEMENTATION.
           reason_text    = @rs_recommendation-reason_text
       WHERE case_uuid = @iv_case_uuid
         AND option_id = @rs_recommendation-option_id.
+
+  ENDMETHOD.
+
+  METHOD generate_recommend_for_case.
+
+    SELECT SINGLE
+      FROM zrap200_cc_case
+      FIELDS
+        case_uuid,
+        crisis_type,
+        severity
+      WHERE case_uuid = @iv_case_uuid
+      INTO @DATA(ls_case).
+
+    IF sy-subrc <> 0.
+      rs_recommendation-reason_text = 'Crisis case not found.'.
+      RETURN.
+    ENDIF.
+
+    DELETE FROM zrap200_cc_opt
+      WHERE case_uuid = @iv_case_uuid.
+
+    DATA lt_options TYPE STANDARD TABLE OF zrap200_cc_opt.
+
+    IF ls_case-crisis_type = zcl_rap200_cc_constants=>gc_crisis_weather.
+
+      lt_options = VALUE #(
+        (
+          case_uuid         = iv_case_uuid
+          option_no         = '001'
+          option_id         = 'OPT001'
+          option_type       = zcl_rap200_cc_constants=>gc_option_pitstop
+          option_text       = 'Immediate pit stop and tyre change'
+          cost_score        = 60
+          time_score        = 75
+          risk_score        = 80
+          feasibility_score = 70
+        )
+        (
+          case_uuid         = iv_case_uuid
+          option_no         = '002'
+          option_id         = 'OPT002'
+          option_type       = zcl_rap200_cc_constants=>gc_option_continue_race
+          option_text       = 'Continue race without stopping'
+          cost_score        = 90
+          time_score        = 85
+          risk_score        = 35
+          feasibility_score = 60
+        )
+        (
+          case_uuid         = iv_case_uuid
+          option_no         = '003'
+          option_id         = 'OPT003'
+          option_type       = zcl_rap200_cc_constants=>gc_option_strategy_change
+          option_text       = 'Change strategy and manage pace'
+          cost_score        = 80
+          time_score        = 70
+          risk_score        = 75
+          feasibility_score = 85
+        )
+      ).
+
+    ELSE.
+
+      lt_options = VALUE #(
+        (
+          case_uuid         = iv_case_uuid
+          option_no         = '001'
+          option_id         = 'OPT001'
+          option_type       = 'STANDARD_RECOVERY'
+          option_text       = 'Standard recovery plan'
+          cost_score        = 70
+          time_score        = 70
+          risk_score        = 70
+          feasibility_score = 70
+        )
+        (
+          case_uuid         = iv_case_uuid
+          option_no         = '002'
+          option_id         = 'OPT002'
+          option_type       = 'ESCALATE'
+          option_text       = 'Escalate case for management decision'
+          cost_score        = 50
+          time_score        = 60
+          risk_score        = 80
+          feasibility_score = 75
+        )
+      ).
+
+    ENDIF.
+
+    INSERT zrap200_cc_opt FROM TABLE @lt_options.
+
+    rs_recommendation = recommend_best_option_for_case(
+      iv_case_uuid = iv_case_uuid
+    ).
 
   ENDMETHOD.
 

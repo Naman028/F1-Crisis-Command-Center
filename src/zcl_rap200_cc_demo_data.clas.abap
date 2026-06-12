@@ -8,121 +8,127 @@ CLASS zcl_rap200_cc_demo_data DEFINITION
 
 ENDCLASS.
 
+
 CLASS zcl_rap200_cc_demo_data IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA lv_case_uuid TYPE sysuuid_x16.
-    DATA lv_old_case_uuid TYPE sysuuid_x16.
-
-    TRY.
-        lv_case_uuid = cl_system_uuid=>create_uuid_x16_static( ).
-      CATCH cx_uuid_error.
-        out->write( 'Could not create UUID.' ).
-        RETURN.
-    ENDTRY.
-
-    GET TIME STAMP FIELD DATA(lv_timestamp).
+    DATA lv_timestamp TYPE timestampl.
+    GET TIME STAMP FIELD lv_timestamp.
 
     DATA(lv_timestamp_text) = |{ lv_timestamp }|.
 
-    out->write( 'F1 Crisis Command Center - Full DB Workflow Test' ).
+    out->write( 'F1 Crisis Command Center - Demo Case Generator' ).
     out->write( '------------------------------------------------' ).
+    out->write( 'Deleting old demo cases and generated options...' ).
 
-    SELECT SINGLE case_uuid
+    SELECT
       FROM zrap200_cc_case
-      WHERE case_id = 'CASE001'
-      INTO @lv_old_case_uuid.
+      FIELDS case_uuid
+      WHERE case_id IN ( 'CASE001', 'CASE002', 'CASE003', 'CASE004' )
+      INTO TABLE @DATA(lt_old_case_uuids).
 
-    IF lv_old_case_uuid IS NOT INITIAL.
+    LOOP AT lt_old_case_uuids INTO DATA(ls_old_case_uuid).
       DELETE FROM zrap200_cc_opt
-        WHERE case_uuid = @lv_old_case_uuid.
-    ENDIF.
+        WHERE case_uuid = @ls_old_case_uuid-case_uuid.
+    ENDLOOP.
 
     DELETE FROM zrap200_cc_case
-      WHERE case_id = 'CASE001'.
+      WHERE case_id IN ( 'CASE001', 'CASE002', 'CASE003', 'CASE004' ).
 
-    DATA ls_case TYPE zrap200_cc_case.
+    DATA lt_cases TYPE STANDARD TABLE OF zrap200_cc_case.
 
-    ls_case-case_uuid   = lv_case_uuid.
-    ls_case-case_id     = 'CASE001'.
-    ls_case-case_title  = 'Rain crisis during Monaco GP'.
-    ls_case-race_id     = 'RACE001'.
-    ls_case-race_name   = 'Monaco Grand Prix'.
-    ls_case-crisis_type = zcl_rap200_cc_constants=>gc_crisis_weather.
-    ls_case-severity    = zcl_rap200_cc_constants=>gc_severity_high.
-    ls_case-status      = zcl_rap200_cc_constants=>gc_status_open.
-    ls_case-created_by  = sy-uname.
-    ls_case-created_at  = lv_timestamp_text.
+    TRY.
 
-    INSERT zrap200_cc_case FROM @ls_case.
+        DATA(lv_case_uuid_1) = cl_system_uuid=>create_uuid_x16_static( ).
+        DATA(lv_case_uuid_2) = cl_system_uuid=>create_uuid_x16_static( ).
+        DATA(lv_case_uuid_3) = cl_system_uuid=>create_uuid_x16_static( ).
+        DATA(lv_case_uuid_4) = cl_system_uuid=>create_uuid_x16_static( ).
 
-    DATA lt_options TYPE STANDARD TABLE OF zrap200_cc_opt.
+      CATCH cx_uuid_error.
 
-    lt_options = VALUE #(
+        out->write( 'Could not create UUIDs.' ).
+        RETURN.
+
+    ENDTRY.
+
+    lt_cases = VALUE #(
       (
-        case_uuid         = lv_case_uuid
-        option_no         = '001'
-        option_id         = 'OPT001'
-        option_type       = zcl_rap200_cc_constants=>gc_option_pitstop
-        option_text       = 'Immediate pit stop and tyre change'
-        cost_score        = 60
-        time_score        = 75
-        risk_score        = 80
-        feasibility_score = 70
+        case_uuid             = lv_case_uuid_1
+        case_id               = 'CASE001'
+        case_title            = 'Rain crisis during Monaco GP'
+        race_id               = 'RACE001'
+        race_name             = 'Monaco Grand Prix'
+        crisis_type           = 'WEATHER'
+        severity              = 'HIGH'
+        status                = 'OPEN'
+        created_by            = sy-uname
+        created_at            = lv_timestamp_text
+        last_changed_by       = sy-uname
+        last_changed_at       = lv_timestamp_text
+        local_last_changed_at = lv_timestamp
       )
       (
-        case_uuid         = lv_case_uuid
-        option_no         = '002'
-        option_id         = 'OPT002'
-        option_type       = zcl_rap200_cc_constants=>gc_option_continue_race
-        option_text       = 'Continue race without stopping'
-        cost_score        = 90
-        time_score        = 85
-        risk_score        = 35
-        feasibility_score = 60
+        case_uuid             = lv_case_uuid_2
+        case_id               = 'CASE002'
+        case_title            = 'Crash damage before qualifying'
+        race_id               = 'RACE002'
+        race_name             = 'Silverstone Grand Prix'
+        crisis_type           = 'CRASH'
+        severity              = 'CRITICAL'
+        status                = 'OPEN'
+        created_by            = sy-uname
+        created_at            = lv_timestamp_text
+        last_changed_by       = sy-uname
+        last_changed_at       = lv_timestamp_text
+        local_last_changed_at = lv_timestamp
       )
       (
-        case_uuid         = lv_case_uuid
-        option_no         = '003'
-        option_id         = 'OPT003'
-        option_type       = zcl_rap200_cc_constants=>gc_option_strategy_change
-        option_text       = 'Change strategy and manage pace'
-        cost_score        = 80
-        time_score        = 70
-        risk_score        = 75
-        feasibility_score = 85
+        case_uuid             = lv_case_uuid_3
+        case_id               = 'CASE003'
+        case_title            = 'Delayed upgrade package shipment'
+        race_id               = 'RACE003'
+        race_name             = 'Singapore Grand Prix'
+        crisis_type           = 'LOGISTICS'
+        severity              = 'MEDIUM'
+        status                = 'OPEN'
+        created_by            = sy-uname
+        created_at            = lv_timestamp_text
+        last_changed_by       = sy-uname
+        last_changed_at       = lv_timestamp_text
+        local_last_changed_at = lv_timestamp
+      )
+      (
+        case_uuid             = lv_case_uuid_4
+        case_id               = 'CASE004'
+        case_title            = 'Technical regulation inspection issue'
+        race_id               = 'RACE004'
+        race_name             = 'Monza Grand Prix'
+        crisis_type           = 'COMPLIANCE'
+        severity              = 'HIGH'
+        status                = 'OPEN'
+        created_by            = sy-uname
+        created_at            = lv_timestamp_text
+        last_changed_by       = sy-uname
+        last_changed_at       = lv_timestamp_text
+        local_last_changed_at = lv_timestamp
       )
     ).
 
-    INSERT zrap200_cc_opt FROM TABLE @lt_options.
+    INSERT zrap200_cc_case FROM TABLE @lt_cases.
 
-    DATA(lo_dec_engine) = NEW zcl_rap200_cc_dec_engine( ).
-
-    DATA(ls_recommendation) = lo_dec_engine->recommend_best_option_for_case(
-      iv_case_uuid = lv_case_uuid
-    ).
-
-    UPDATE zrap200_cc_case
-      SET recommended_option_id   = @ls_recommendation-option_id,
-          recommended_option_type = @ls_recommendation-option_type,
-          recommended_score       = @ls_recommendation-total_score,
-          recommended_rating      = @ls_recommendation-rating,
-          recommended_text        = @ls_recommendation-reason_text,
-          status                  = 'RECOMMENDED',
-          last_changed_by         = @sy-uname,
-          last_changed_at         = @lv_timestamp_text
-      WHERE case_uuid = @lv_case_uuid.
-
-    out->write( |Created Case UUID: { lv_case_uuid }| ).
-    out->write( |Created Case ID: CASE001| ).
-    out->write( |Recommended Option: { ls_recommendation-option_type }| ).
-    out->write( |Score: { ls_recommendation-total_score }| ).
-    out->write( |Rating: { ls_recommendation-rating }| ).
-    out->write( |Reason: { ls_recommendation-reason_text }| ).
-
+    out->write( |Created demo crisis cases: { lines( lt_cases ) }| ).
+    out->write( 'No recovery options were inserted by demo data.' ).
+    out->write( 'Open Fiori preview and click Generate Recommendation for each case.' ).
     out->write( '------------------------------------------------' ).
-    out->write( 'Now open CrisisCase preview and click Go.' ).
+
+    LOOP AT lt_cases INTO DATA(ls_case).
+
+      out->write(
+        |{ ls_case-case_id } - { ls_case-crisis_type } - { ls_case-severity } - { ls_case-case_title }|
+      ).
+
+    ENDLOOP.
 
   ENDMETHOD.
 

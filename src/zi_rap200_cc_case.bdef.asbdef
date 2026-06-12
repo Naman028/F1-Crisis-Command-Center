@@ -9,7 +9,7 @@ etag master LocalLastChangedAt
   update;
   delete;
 
-  association _RecoveryOptions;
+  association _RecoveryOptions { create; }
 
   field ( readonly, numbering : managed ) CaseUUID;
 
@@ -56,20 +56,12 @@ define behavior for ZI_RAP200_CC_OPT alias RecoveryOption
 persistent table zrap200_cc_opt
 lock dependent by _CrisisCase
 {
-  field ( readonly )
+  update;
+  delete;
+
+  field ( readonly : update )
     CaseUUID,
-    OptionNo,
-    OptionID,
-    OptionType,
-    OptionText,
-    CostScore,
-    TimeScore,
-    RiskScore,
-    FeasibilityScore,
-    TotalScore,
-    Rating,
-    IsRecommended,
-    ReasonText;
+    OptionNo;
 
   association _CrisisCase;
 

@@ -6,12 +6,15 @@ define behavior for ZC_RAP200_CC_CASE alias CrisisCase
   use update;
   use delete;
 
-  use association _RecoveryOptions;
+  use association _RecoveryOptions { create; }
 
   use action generateAndRecommendOptions;
 }
 
 define behavior for ZC_RAP200_CC_OPT alias RecoveryOption
 {
+  use update;
+  use delete;
+
   use association _CrisisCase;
 }
