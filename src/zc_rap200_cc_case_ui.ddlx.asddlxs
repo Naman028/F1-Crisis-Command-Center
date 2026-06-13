@@ -268,56 +268,6 @@ annotate view ZC_RAP200_CC_CASE with
   ]
   RecommendedText;
 
-  @EndUserText.label: 'Cost Score Guide'
-  @EndUserText.quickInfo: 'How to score cost efficiency.'
-  @UI.fieldGroup: [
-    {
-      qualifier: 'ScoringGuide',
-      position: 10
-    }
-  ]
-  costscoreguide;
-
-  @EndUserText.label: 'Time Score Guide'
-  @EndUserText.quickInfo: 'How to score response speed.'
-  @UI.fieldGroup: [
-    {
-      qualifier: 'ScoringGuide',
-      position: 20
-    }
-  ]
-  timescoreguide;
-
-  @EndUserText.label: 'Risk Control Guide'
-  @EndUserText.quickInfo: 'How to score risk control.'
-  @UI.fieldGroup: [
-    {
-      qualifier: 'ScoringGuide',
-      position: 30
-    }
-  ]
-  riskscoreguide;
-
-  @EndUserText.label: 'Feasibility Guide'
-  @EndUserText.quickInfo: 'How to score feasibility.'
-  @UI.fieldGroup: [
-    {
-      qualifier: 'ScoringGuide',
-      position: 40
-    }
-  ]
-  feasibilityscoreguide;
-
-  @EndUserText.label: 'Workflow Guide'
-  @EndUserText.quickInfo: 'How to use recommendation action.'
-  @UI.fieldGroup: [
-    {
-      qualifier: 'ScoringGuide',
-      position: 50
-    }
-  ]
-  workflowguide;
-
   @EndUserText.label: 'Created By'
   @EndUserText.quickInfo: 'Technical user who created this case.'
   @UI.hidden: true
