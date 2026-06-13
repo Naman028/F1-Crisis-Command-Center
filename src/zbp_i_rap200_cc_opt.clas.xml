@@ -6,12 +6,10 @@
     <CLSNAME>ZBP_I_RAP200_CC_OPT</CLSNAME>
     <LANGU>E</LANGU>
     <DESCRIPT>F1 Recovery Option Behavior Pool</DESCRIPT>
-    <CATEGORY>06</CATEGORY>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
-    <CLSDEFINT>ZI_RAP200_CC_OPT</CLSDEFINT>
    </VSEOCLASS>
   </asx:values>
  </asx:abap>

@@ -61,7 +61,7 @@ annotate view ZC_RAP200_CC_CASE with
   CaseUUID;
 
   @EndUserText.label: 'Case ID'
-  @EndUserText.quickInfo: 'System-generated crisis case identifier.'
+  @EndUserText.quickInfo: 'System-generated case number.'
   @UI.lineItem: [
     {
       position: 10,
@@ -77,14 +77,13 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 10,
-      label: 'Case ID'
+      position: 10
     }
   ]
   CaseID;
 
   @EndUserText.label: 'Case Title'
-  @EndUserText.quickInfo: 'Short description of the F1 race crisis.'
+  @EndUserText.quickInfo: 'Short title for the F1 crisis.'
   @UI.lineItem: [
     {
       position: 20,
@@ -105,8 +104,7 @@ annotate view ZC_RAP200_CC_CASE with
   ]
   @UI.identification: [
     {
-      position: 10,
-      label: 'Case Title'
+      position: 10
     },
     {
       position: 90,
@@ -118,36 +116,33 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 20,
-      label: 'Case Title'
+      position: 20
     }
   ]
   CaseTitle;
 
   @EndUserText.label: 'Race ID'
-  @EndUserText.quickInfo: 'Race identifier, for example RACE001.'
+  @EndUserText.quickInfo: 'Race identifier, for example RACE015.'
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 30,
-      label: 'Race ID'
+      position: 30
     }
   ]
   RaceID;
 
   @EndUserText.label: 'Race Name'
-  @EndUserText.quickInfo: 'Race name, for example Bahrain Grand Prix.'
+  @EndUserText.quickInfo: 'Name of the Grand Prix race.'
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 40,
-      label: 'Race Name'
+      position: 40
     }
   ]
   RaceName;
 
   @EndUserText.label: 'Crisis Type'
-  @EndUserText.quickInfo: 'Select WEATHER, CRASH, LOGISTICS, or COMPLIANCE.'
+  @EndUserText.quickInfo: 'WEATHER, CRASH, LOGISTICS, COMPLIANCE.'
   @Consumption.valueHelpDefinition: [
     {
       entity: {
@@ -171,14 +166,13 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 50,
-      label: 'Crisis Type'
+      position: 50
     }
   ]
   CrisisType;
 
   @EndUserText.label: 'Severity'
-  @EndUserText.quickInfo: 'Select LOW, MEDIUM, HIGH, or CRITICAL.'
+  @EndUserText.quickInfo: 'Impact level: LOW, MEDIUM, HIGH, CRITICAL.'
   @Consumption.valueHelpDefinition: [
     {
       entity: {
@@ -202,14 +196,13 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 60,
-      label: 'Severity'
+      position: 60
     }
   ]
   Severity;
 
   @EndUserText.label: 'Status'
-  @EndUserText.quickInfo: 'System status of the crisis case.'
+  @EndUserText.quickInfo: 'Current system status of the case.'
   @UI.lineItem: [
     {
       position: 50,
@@ -220,79 +213,133 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 70,
-      label: 'Status'
+      position: 70
     }
   ]
   Status;
 
   @EndUserText.label: 'Recommended Option ID'
-  @EndUserText.quickInfo: 'System-selected best recovery option ID.'
+  @EndUserText.quickInfo: 'ID of the backend-selected best option.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
-      position: 10,
-      label: 'Recommended Option ID'
+      position: 10
     }
   ]
   RecommendedOptionID;
 
   @EndUserText.label: 'Recommended Option Type'
-  @EndUserText.quickInfo: 'System-selected best recovery option type.'
+  @EndUserText.quickInfo: 'Strategy type selected as best option.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
-      position: 20,
-      label: 'Recommended Option Type'
+      position: 20
     }
   ]
   RecommendedOptionType;
 
   @EndUserText.label: 'Recommended Score'
-  @EndUserText.quickInfo: 'Weighted recommendation score.'
+  @EndUserText.quickInfo: 'Weighted score from option factors.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
-      position: 30,
-      label: 'Recommended Score'
+      position: 30
     }
   ]
   RecommendedScore;
 
   @EndUserText.label: 'Recommended Rating'
-  @EndUserText.quickInfo: 'Rating calculated from the recommended score.'
+  @EndUserText.quickInfo: 'Rating derived from recommended score.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
-      position: 40,
-      label: 'Recommended Rating'
+      position: 40
     }
   ]
   RecommendedRating;
 
   @EndUserText.label: 'Recommended Text'
-  @EndUserText.quickInfo: 'Explanation of the selected recommendation.'
+  @EndUserText.quickInfo: 'Explanation for the recommendation.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
-      position: 50,
-      label: 'Recommended Text'
+      position: 50
     }
   ]
   RecommendedText;
 
+  @EndUserText.label: 'Cost Score Guide'
+  @EndUserText.quickInfo: 'How to score cost efficiency.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'ScoringGuide',
+      position: 10
+    }
+  ]
+  costscoreguide;
+
+  @EndUserText.label: 'Time Score Guide'
+  @EndUserText.quickInfo: 'How to score response speed.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'ScoringGuide',
+      position: 20
+    }
+  ]
+  timescoreguide;
+
+  @EndUserText.label: 'Risk Control Guide'
+  @EndUserText.quickInfo: 'How to score risk control.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'ScoringGuide',
+      position: 30
+    }
+  ]
+  riskscoreguide;
+
+  @EndUserText.label: 'Feasibility Guide'
+  @EndUserText.quickInfo: 'How to score feasibility.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'ScoringGuide',
+      position: 40
+    }
+  ]
+  feasibilityscoreguide;
+
+  @EndUserText.label: 'Workflow Guide'
+  @EndUserText.quickInfo: 'How to use recommendation action.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'ScoringGuide',
+      position: 50
+    }
+  ]
+  workflowguide;
+
+  @EndUserText.label: 'Created By'
+  @EndUserText.quickInfo: 'Technical user who created this case.'
   @UI.hidden: true
   CreatedBy;
 
+  @EndUserText.label: 'Created At'
+  @EndUserText.quickInfo: 'Timestamp when this case was created.'
   @UI.hidden: true
   CreatedAt;
 
+  @EndUserText.label: 'Last Changed By'
+  @EndUserText.quickInfo: 'Technical user who last changed this case.'
   @UI.hidden: true
   LastChangedBy;
 
+  @EndUserText.label: 'Last Changed At'
+  @EndUserText.quickInfo: 'Timestamp of the last change.'
   @UI.hidden: true
   LastChangedAt;
 
+  @EndUserText.label: 'Local Last Changed At'
+  @EndUserText.quickInfo: 'RAP concurrency timestamp.'
   @UI.hidden: true
   LocalLastChangedAt;
 }

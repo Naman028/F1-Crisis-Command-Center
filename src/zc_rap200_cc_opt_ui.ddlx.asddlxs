@@ -25,74 +25,193 @@ annotate view ZC_RAP200_CC_OPT with
   ]
 
   @EndUserText.label: 'Option No'
-  @EndUserText.quickInfo: 'Sequence number, for example 001, 002, 003.'
-  @UI.lineItem: [{ position: 10, importance: #HIGH }]
-  @UI.identification: [{ position: 10 }]
+  @EndUserText.quickInfo: 'Sequence number. Enter 001, 002, 003, etc.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      importance: #HIGH,
+      label: 'Option No'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 10,
+      label: 'Option No'
+    }
+  ]
   OptionNo;
 
   @EndUserText.label: 'Option ID'
-  @EndUserText.quickInfo: 'Optional. Leave empty; backend fills OPTxxx during recommendation.'
-  @UI.lineItem: [{ position: 20, importance: #HIGH }]
-  @UI.identification: [{ position: 20 }]
+  @EndUserText.quickInfo: 'Backend-filled ID after recommendation, for example OPT001.'
+  @UI.lineItem: [
+    {
+      position: 20,
+      importance: #HIGH,
+      label: 'Option ID'
+    }
+  ]
   OptionID;
 
   @EndUserText.label: 'Option Type'
-  @EndUserText.quickInfo: 'Required. Short strategy name, for example SCRUTINEERING_REVIEW.'
-  @UI.lineItem: [{ position: 30, importance: #HIGH }]
-  @UI.identification: [{ position: 30 }]
+  @EndUserText.quickInfo: 'Required. Enter short strategy name.'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Option Type'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 20,
+      label: 'Option Type'
+    }
+  ]
   OptionType;
 
   @EndUserText.label: 'Option Text'
-  @EndUserText.quickInfo: 'Required. Explain what this recovery option does.'
-  @UI.lineItem: [{ position: 40 }]
-  @UI.identification: [{ position: 40 }]
+  @EndUserText.quickInfo: 'Required. Describe what this recovery option does.'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Option Text'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 30,
+      label: 'Option Text'
+    }
+  ]
   OptionText;
 
   @EndUserText.label: 'Cost Score'
   @EndUserText.quickInfo: '0-20 costly, 41-60 medium, 81-100 cost-efficient.'
-  @UI.lineItem: [{ position: 50 }]
-  @UI.identification: [{ position: 50 }]
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Cost Score'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 40,
+      label: 'Cost Score (0-100)'
+    }
+  ]
   CostScore;
 
   @EndUserText.label: 'Time Score'
   @EndUserText.quickInfo: '0-20 slow, 41-60 acceptable, 81-100 very fast.'
-  @UI.lineItem: [{ position: 60 }]
-  @UI.identification: [{ position: 60 }]
+  @UI.lineItem: [
+    {
+      position: 60,
+      label: 'Time Score'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 50,
+      label: 'Time Score (0-100)'
+    }
+  ]
   TimeScore;
 
-  @EndUserText.label: 'Risk Score'
+  @EndUserText.label: 'Risk Control Score'
   @EndUserText.quickInfo: '0-20 risky, 41-60 manageable, 81-100 very safe.'
-  @UI.lineItem: [{ position: 70 }]
-  @UI.identification: [{ position: 70 }]
+  @UI.lineItem: [
+    {
+      position: 70,
+      label: 'Risk Control'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 60,
+      label: 'Risk Control Score (0-100)'
+    }
+  ]
   RiskScore;
 
   @EndUserText.label: 'Feasibility Score'
   @EndUserText.quickInfo: '0-20 hard, 41-60 possible, 81-100 easy to execute.'
-  @UI.lineItem: [{ position: 80 }]
-  @UI.identification: [{ position: 80 }]
+  @UI.lineItem: [
+    {
+      position: 80,
+      label: 'Feasibility'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 70,
+      label: 'Feasibility Score (0-100)'
+    }
+  ]
   FeasibilityScore;
 
   @EndUserText.label: 'Total Score'
-  @EndUserText.quickInfo: 'Backend-calculated weighted score.'
-  @UI.lineItem: [{ position: 90, importance: #HIGH }]
-  @UI.identification: [{ position: 90 }]
+  @EndUserText.quickInfo: 'Backend-calculated weighted recommendation score.'
+  @UI.lineItem: [
+    {
+      position: 90,
+      importance: #HIGH,
+      label: 'Total Score'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 80,
+      label: 'Total Score'
+    }
+  ]
   TotalScore;
 
   @EndUserText.label: 'Rating'
-  @EndUserText.quickInfo: 'Backend-calculated rating.'
-  @UI.lineItem: [{ position: 100, importance: #HIGH }]
-  @UI.identification: [{ position: 100 }]
+  @EndUserText.quickInfo: 'Backend-calculated rating from the total score.'
+  @UI.lineItem: [
+    {
+      position: 100,
+      importance: #HIGH,
+      label: 'Rating'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 90,
+      label: 'Rating'
+    }
+  ]
   Rating;
 
   @EndUserText.label: 'Recommended'
-  @EndUserText.quickInfo: 'X means this option is currently recommended.'
-  @UI.lineItem: [{ position: 110, importance: #HIGH }]
-  @UI.identification: [{ position: 110 }]
+  @EndUserText.quickInfo: 'X means this option is selected as the best option.'
+  @UI.lineItem: [
+    {
+      position: 110,
+      importance: #HIGH,
+      label: 'Recommended'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 100,
+      label: 'Recommended'
+    }
+  ]
   IsRecommended;
 
   @EndUserText.label: 'Reason'
-  @EndUserText.quickInfo: 'Backend-generated recommendation explanation.'
-  @UI.lineItem: [{ position: 120 }]
-  @UI.identification: [{ position: 120 }]
+  @EndUserText.quickInfo: 'Backend-generated reason for this recommendation.'
+  @UI.lineItem: [
+    {
+      position: 120,
+      label: 'Reason'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 110,
+      label: 'Reason'
+    }
+  ]
   ReasonText;
 }

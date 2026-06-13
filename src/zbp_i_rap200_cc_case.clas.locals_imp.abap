@@ -141,8 +141,8 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
     LOOP AT keys INTO DATA(ls_key).
 
-      READ TABLE lt_cases INTO DATA(ls_case)
-        WITH KEY %tky = ls_key-%tky.
+        READ TABLE lt_cases INTO DATA(ls_case)
+        WITH TABLE KEY id COMPONENTS %tky = ls_key-%tky.
 
       IF sy-subrc <> 0.
         CONTINUE.
@@ -150,7 +150,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
       DATA(lv_has_options) = abap_false.
 
-      LOOP AT lt_existing_options INTO DATA(ls_existing_option)
+        LOOP AT lt_existing_options USING KEY entity INTO DATA(ls_existing_option)
         WHERE CaseUUID = ls_case-CaseUUID.
         lv_has_options = abap_true.
         EXIT.
@@ -458,7 +458,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       DATA ls_best_score_result TYPE zcl_rap200_cc_score_srv=>ty_score_result.
       DATA lv_best_option_id TYPE zrap200_cc_opt-option_id.
 
-      LOOP AT lt_reloaded_options INTO DATA(ls_option)
+        LOOP AT lt_reloaded_options USING KEY entity INTO DATA(ls_option)
         WHERE CaseUUID = ls_case_for_scoring-CaseUUID.
 
         DATA(lv_option_id) = ls_option-OptionID.
