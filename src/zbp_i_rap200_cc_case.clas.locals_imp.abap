@@ -456,9 +456,16 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       DATA lv_best_score TYPE i VALUE -1.
       DATA ls_best_option LIKE LINE OF lt_reloaded_options.
       DATA ls_best_score_result TYPE zcl_rap200_cc_score_srv=>ty_score_result.
+      DATA lv_best_option_id TYPE zrap200_cc_opt-option_id.
 
       LOOP AT lt_reloaded_options INTO DATA(ls_option)
         WHERE CaseUUID = ls_case_for_scoring-CaseUUID.
+
+        DATA(lv_option_id) = ls_option-OptionID.
+
+        IF lv_option_id IS INITIAL.
+          lv_option_id = |OPT{ ls_option-OptionNo }|.
+        ENDIF.
 
         DATA(ls_score) = lo_score_srv->calculate_total_score(
           is_input = VALUE zcl_rap200_cc_score_srv=>ty_score_input(
@@ -472,6 +479,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
           ENTITY RecoveryOption
           UPDATE FIELDS (
+            OptionID
             TotalScore
             Rating
             IsRecommended
@@ -480,6 +488,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
           WITH VALUE #(
             (
               %tky          = ls_option-%tky
+              OptionID      = lv_option_id
               TotalScore    = ls_score-total_score
               Rating        = ls_score-rating
               IsRecommended = ''
@@ -493,6 +502,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
           lv_best_score        = ls_score-total_score.
           ls_best_option       = ls_option.
           ls_best_score_result = ls_score.
+          lv_best_option_id    = lv_option_id.
         ENDIF.
 
       ENDLOOP.
@@ -507,6 +517,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
         ENTITY RecoveryOption
         UPDATE FIELDS (
+          OptionID
           TotalScore
           Rating
           IsRecommended
@@ -515,6 +526,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         WITH VALUE #(
           (
             %tky          = ls_best_option-%tky
+            OptionID      = lv_best_option_id
             TotalScore    = ls_best_score_result-total_score
             Rating        = ls_best_score_result-rating
             IsRecommended = 'X'
@@ -537,7 +549,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         WITH VALUE #(
           (
             %tky                  = ls_case_for_scoring-%tky
-            RecommendedOptionID   = ls_best_option-OptionID
+            RecommendedOptionID   = lv_best_option_id
             RecommendedOptionType = ls_best_option-OptionType
             RecommendedScore      = ls_best_score_result-total_score
             RecommendedRating     = ls_best_score_result-rating
@@ -639,6 +651,10 @@ CLASS lhc_RecoveryOption DEFINITION INHERITING FROM cl_abap_behavior_handler.
       FOR VALIDATE ON SAVE
       IMPORTING keys FOR RecoveryOption~validateScoreRange.
 
+    METHODS validateOptionRequired
+      FOR VALIDATE ON SAVE
+      IMPORTING keys FOR RecoveryOption~validateOptionRequired.
+
 ENDCLASS.
 
 
@@ -682,6 +698,43 @@ CLASS lhc_RecoveryOption IMPLEMENTATION.
           %element-TimeScore        = if_abap_behv=>mk-on
           %element-RiskScore        = if_abap_behv=>mk-on
           %element-FeasibilityScore = if_abap_behv=>mk-on
+        ) TO reported-recoveryoption.
+
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD validateOptionRequired.
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY RecoveryOption
+      FIELDS (
+        OptionType
+        OptionText
+      )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_options).
+
+    LOOP AT lt_options INTO DATA(ls_option).
+
+      IF ls_option-OptionType IS INITIAL
+         OR ls_option-OptionText IS INITIAL.
+
+        APPEND VALUE #(
+          %tky = ls_option-%tky
+        ) TO failed-recoveryoption.
+
+        APPEND VALUE #(
+          %tky = ls_option-%tky
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'Option Type and Option Text are required. Option ID is filled automatically if empty.'
+                 )
+          %element-OptionType = if_abap_behv=>mk-on
+          %element-OptionText = if_abap_behv=>mk-on
         ) TO reported-recoveryoption.
 
       ENDIF.

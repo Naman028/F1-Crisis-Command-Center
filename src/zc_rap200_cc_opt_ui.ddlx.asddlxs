@@ -24,62 +24,74 @@ annotate view ZC_RAP200_CC_OPT with
     }
   ]
 
-  @EndUserText.quickInfo: 'System-generated sequence number for the recovery option.'
+  @EndUserText.label: 'Option No'
+  @EndUserText.quickInfo: 'Sequence number, for example 001, 002, 003.'
   @UI.lineItem: [{ position: 10, importance: #HIGH }]
   @UI.identification: [{ position: 10 }]
   OptionNo;
 
-  @EndUserText.quickInfo: 'Recovery option identifier.'
+  @EndUserText.label: 'Option ID'
+  @EndUserText.quickInfo: 'Optional. Leave empty; backend fills OPTxxx during recommendation.'
   @UI.lineItem: [{ position: 20, importance: #HIGH }]
   @UI.identification: [{ position: 20 }]
   OptionID;
 
-  @EndUserText.quickInfo: 'Type of recovery strategy, for example PITSTOP or EMERGENCY_SHIP.'
+  @EndUserText.label: 'Option Type'
+  @EndUserText.quickInfo: 'Required. Short strategy name, for example SCRUTINEERING_REVIEW.'
   @UI.lineItem: [{ position: 30, importance: #HIGH }]
   @UI.identification: [{ position: 30 }]
   OptionType;
 
-  @EndUserText.quickInfo: 'Description of the recovery option.'
+  @EndUserText.label: 'Option Text'
+  @EndUserText.quickInfo: 'Required. Explain what this recovery option does.'
   @UI.lineItem: [{ position: 40 }]
   @UI.identification: [{ position: 40 }]
   OptionText;
 
-  @EndUserText.quickInfo: 'Enter 0-100. Higher value means better cost efficiency.'
+  @EndUserText.label: 'Cost Score'
+  @EndUserText.quickInfo: '0-20 costly, 41-60 medium, 81-100 cost-efficient.'
   @UI.lineItem: [{ position: 50 }]
   @UI.identification: [{ position: 50 }]
   CostScore;
 
-  @EndUserText.quickInfo: 'Enter 0-100. Higher value means faster execution.'
+  @EndUserText.label: 'Time Score'
+  @EndUserText.quickInfo: '0-20 slow, 41-60 acceptable, 81-100 very fast.'
   @UI.lineItem: [{ position: 60 }]
   @UI.identification: [{ position: 60 }]
   TimeScore;
 
-  @EndUserText.quickInfo: 'Enter 0-100. Higher value means better risk control.'
+  @EndUserText.label: 'Risk Score'
+  @EndUserText.quickInfo: '0-20 risky, 41-60 manageable, 81-100 very safe.'
   @UI.lineItem: [{ position: 70 }]
   @UI.identification: [{ position: 70 }]
   RiskScore;
 
-  @EndUserText.quickInfo: 'Enter 0-100. Higher value means easier practical execution.'
+  @EndUserText.label: 'Feasibility Score'
+  @EndUserText.quickInfo: '0-20 hard, 41-60 possible, 81-100 easy to execute.'
   @UI.lineItem: [{ position: 80 }]
   @UI.identification: [{ position: 80 }]
   FeasibilityScore;
 
+  @EndUserText.label: 'Total Score'
   @EndUserText.quickInfo: 'Backend-calculated weighted score.'
   @UI.lineItem: [{ position: 90, importance: #HIGH }]
   @UI.identification: [{ position: 90 }]
   TotalScore;
 
-  @EndUserText.quickInfo: 'Backend-calculated rating based on total score.'
+  @EndUserText.label: 'Rating'
+  @EndUserText.quickInfo: 'Backend-calculated rating.'
   @UI.lineItem: [{ position: 100, importance: #HIGH }]
   @UI.identification: [{ position: 100 }]
   Rating;
 
+  @EndUserText.label: 'Recommended'
   @EndUserText.quickInfo: 'X means this option is currently recommended.'
   @UI.lineItem: [{ position: 110, importance: #HIGH }]
   @UI.identification: [{ position: 110 }]
   IsRecommended;
 
-  @EndUserText.quickInfo: 'Backend-generated explanation for the recommendation.'
+  @EndUserText.label: 'Reason'
+  @EndUserText.quickInfo: 'Backend-generated recommendation explanation.'
   @UI.lineItem: [{ position: 120 }]
   @UI.identification: [{ position: 120 }]
   ReasonText;
