@@ -1,0 +1,261 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Crisis Case',
+  typeNamePlural: 'Crisis Cases',
+  title: {
+    type: #STANDARD,
+    value: 'CaseID'
+  },
+  description: {
+    value: 'CaseTitle'
+  }
+}
+
+annotate view ZC_RAP200_CC_CASE with
+{
+  @UI.facet: [
+    {
+      id: 'CrisisDetailsFacet',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Crisis Details',
+      position: 10,
+      targetQualifier: 'CrisisDetails'
+    },
+    {
+      id: 'RecommendationFacet',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Recommendation',
+      position: 20,
+      targetQualifier: 'Recommendation'
+    },
+    {
+      id: 'RecoveryOptionsFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Generated Recovery Options',
+      position: 30,
+      targetElement: '_RecoveryOptions'
+    }
+  ]
+
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Case ID'
+  @EndUserText.quickInfo: 'System-generated crisis case identifier.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'Case ID'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 10
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 10,
+      label: 'Case ID'
+    }
+  ]
+  CaseID;
+
+  @EndUserText.label: 'Case Title'
+  @EndUserText.quickInfo: 'Short description of the F1 race crisis.'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Case Title'
+    },
+    {
+      position: 90,
+      type: #FOR_ACTION,
+      dataAction: 'generateAndRecommendOptions',
+      label: 'Generate Recommendation'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 20
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 10,
+      label: 'Case Title'
+    },
+    {
+      position: 90,
+      type: #FOR_ACTION,
+      dataAction: 'generateAndRecommendOptions',
+      label: 'Generate Recommendation'
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 20,
+      label: 'Case Title'
+    }
+  ]
+  CaseTitle;
+
+  @EndUserText.label: 'Race ID'
+  @EndUserText.quickInfo: 'Race identifier, for example RACE001.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 30,
+      label: 'Race ID'
+    }
+  ]
+  RaceID;
+
+  @EndUserText.label: 'Race Name'
+  @EndUserText.quickInfo: 'Race name, for example Bahrain Grand Prix.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 40,
+      label: 'Race Name'
+    }
+  ]
+  RaceName;
+
+  @EndUserText.label: 'Crisis Type'
+  @EndUserText.quickInfo: 'Allowed values: WEATHER, CRASH, LOGISTICS, COMPLIANCE.'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Crisis Type'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 30
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 50,
+      label: 'Crisis Type'
+    }
+  ]
+  CrisisType;
+
+  @EndUserText.label: 'Severity'
+  @EndUserText.quickInfo: 'Allowed values: LOW, MEDIUM, HIGH, CRITICAL.'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Severity'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 40
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 60,
+      label: 'Severity'
+    }
+  ]
+  Severity;
+
+  @EndUserText.label: 'Status'
+  @EndUserText.quickInfo: 'System status of the crisis case.'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Status'
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 70,
+      label: 'Status'
+    }
+  ]
+  Status;
+
+  @EndUserText.label: 'Recommended Option ID'
+  @EndUserText.quickInfo: 'System-selected best recovery option ID.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 10,
+      label: 'Recommended Option ID'
+    }
+  ]
+  RecommendedOptionID;
+
+  @EndUserText.label: 'Recommended Option Type'
+  @EndUserText.quickInfo: 'System-selected best recovery option type.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 20,
+      label: 'Recommended Option Type'
+    }
+  ]
+  RecommendedOptionType;
+
+  @EndUserText.label: 'Recommended Score'
+  @EndUserText.quickInfo: 'Weighted score calculated from cost, time, risk control, and feasibility.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 30,
+      label: 'Recommended Score'
+    }
+  ]
+  RecommendedScore;
+
+  @EndUserText.label: 'Recommended Rating'
+  @EndUserText.quickInfo: 'Rating calculated from the recommended score.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 40,
+      label: 'Recommended Rating'
+    }
+  ]
+  RecommendedRating;
+
+  @EndUserText.label: 'Recommended Text'
+  @EndUserText.quickInfo: 'Explanation of the selected recommendation.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 50,
+      label: 'Recommended Text'
+    }
+  ]
+  RecommendedText;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

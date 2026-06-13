@@ -6,9 +6,14 @@
 "ZI_RAP200_CC_CASE"
 ],
 "ASSOCIATED":
-[],
+[
+"ZC_RAP200_CC_OPT",
+"ZI_RAP200_CC_OPT"
+],
 "BASE":
-[],
+[
+"ZI_RAP200_CC_CASE"
+],
 "ANNO_REF":
 [],
 "SCALAR_FUNCTION":
