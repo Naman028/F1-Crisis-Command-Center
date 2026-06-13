@@ -18,6 +18,11 @@ CLASS lhc_CrisisCase DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     TYPES tt_generated_options TYPE STANDARD TABLE OF ty_generated_option WITH EMPTY KEY.
 
+    METHODS get_global_authorizations
+      FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR CrisisCase
+      RESULT result.
+
     METHODS generateAndRecommendOptions
       FOR MODIFY
       IMPORTING keys FOR ACTION CrisisCase~generateAndRecommendOptions
@@ -39,6 +44,15 @@ ENDCLASS.
 
 
 CLASS lhc_CrisisCase IMPLEMENTATION.
+
+  METHOD get_global_authorizations.
+
+    "Demo project:
+    "No restriction is applied here.
+    "The method exists because the behavior definition uses global authorization.
+
+  ENDMETHOD.
+
 
   METHOD setInitialCaseData.
 
@@ -612,6 +626,67 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
     lv_max_number = lv_max_number + 1.
 
     rv_case_id = |CASE{ lv_max_number WIDTH = 3 ALIGN = RIGHT PAD = '0' }|.
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+CLASS lhc_RecoveryOption DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PRIVATE SECTION.
+
+    METHODS validateScoreRange
+      FOR VALIDATE ON SAVE
+      IMPORTING keys FOR RecoveryOption~validateScoreRange.
+
+ENDCLASS.
+
+
+CLASS lhc_RecoveryOption IMPLEMENTATION.
+
+  METHOD validateScoreRange.
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY RecoveryOption
+      FIELDS (
+        CostScore
+        TimeScore
+        RiskScore
+        FeasibilityScore
+      )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_options).
+
+    LOOP AT lt_options INTO DATA(ls_option).
+
+      IF ls_option-CostScore > 100
+         OR ls_option-TimeScore > 100
+         OR ls_option-RiskScore > 100
+         OR ls_option-FeasibilityScore > 100
+         OR ls_option-CostScore < 0
+         OR ls_option-TimeScore < 0
+         OR ls_option-RiskScore < 0
+         OR ls_option-FeasibilityScore < 0.
+
+        APPEND VALUE #(
+          %tky = ls_option-%tky
+        ) TO failed-recoveryoption.
+
+        APPEND VALUE #(
+          %tky = ls_option-%tky
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'Score values must be between 0 and 100.'
+                 )
+          %element-CostScore        = if_abap_behv=>mk-on
+          %element-TimeScore        = if_abap_behv=>mk-on
+          %element-RiskScore        = if_abap_behv=>mk-on
+          %element-FeasibilityScore = if_abap_behv=>mk-on
+        ) TO reported-recoveryoption.
+
+      ENDIF.
+
+    ENDLOOP.
 
   ENDMETHOD.
 

@@ -45,6 +45,7 @@ annotate view ZC_RAP200_CC_CASE with
   CaseUUID;
 
   @EndUserText.label: 'Case ID'
+  @EndUserText.quickInfo: 'System-generated crisis case identifier.'
   @UI.lineItem: [
     {
       position: 10,
@@ -66,6 +67,7 @@ annotate view ZC_RAP200_CC_CASE with
   CaseID;
 
   @EndUserText.label: 'Case Title'
+  @EndUserText.quickInfo: 'Short description of the F1 race crisis.'
   @UI.lineItem: [
     {
       position: 20,
@@ -105,6 +107,7 @@ annotate view ZC_RAP200_CC_CASE with
   CaseTitle;
 
   @EndUserText.label: 'Race ID'
+  @EndUserText.quickInfo: 'Race identifier, for example RACE001.'
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
@@ -115,6 +118,7 @@ annotate view ZC_RAP200_CC_CASE with
   RaceID;
 
   @EndUserText.label: 'Race Name'
+  @EndUserText.quickInfo: 'Race name, for example Bahrain Grand Prix.'
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
@@ -125,6 +129,7 @@ annotate view ZC_RAP200_CC_CASE with
   RaceName;
 
   @EndUserText.label: 'Crisis Type'
+  @EndUserText.quickInfo: 'Allowed values: WEATHER, CRASH, LOGISTICS, COMPLIANCE.'
   @UI.lineItem: [
     {
       position: 30,
@@ -146,6 +151,7 @@ annotate view ZC_RAP200_CC_CASE with
   CrisisType;
 
   @EndUserText.label: 'Severity'
+  @EndUserText.quickInfo: 'Allowed values: LOW, MEDIUM, HIGH, CRITICAL.'
   @UI.lineItem: [
     {
       position: 40,
@@ -167,6 +173,7 @@ annotate view ZC_RAP200_CC_CASE with
   Severity;
 
   @EndUserText.label: 'Status'
+  @EndUserText.quickInfo: 'System status of the crisis case.'
   @UI.lineItem: [
     {
       position: 50,
@@ -183,6 +190,7 @@ annotate view ZC_RAP200_CC_CASE with
   Status;
 
   @EndUserText.label: 'Recommended Option ID'
+  @EndUserText.quickInfo: 'System-selected best recovery option ID.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
@@ -193,6 +201,7 @@ annotate view ZC_RAP200_CC_CASE with
   RecommendedOptionID;
 
   @EndUserText.label: 'Recommended Option Type'
+  @EndUserText.quickInfo: 'System-selected best recovery option type.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
@@ -203,6 +212,7 @@ annotate view ZC_RAP200_CC_CASE with
   RecommendedOptionType;
 
   @EndUserText.label: 'Recommended Score'
+  @EndUserText.quickInfo: 'Weighted recommendation score.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
@@ -213,6 +223,7 @@ annotate view ZC_RAP200_CC_CASE with
   RecommendedScore;
 
   @EndUserText.label: 'Recommended Rating'
+  @EndUserText.quickInfo: 'Rating calculated from the recommended score.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',
@@ -223,6 +234,7 @@ annotate view ZC_RAP200_CC_CASE with
   RecommendedRating;
 
   @EndUserText.label: 'Recommended Text'
+  @EndUserText.quickInfo: 'Explanation of the selected recommendation.'
   @UI.fieldGroup: [
     {
       qualifier: 'Recommendation',

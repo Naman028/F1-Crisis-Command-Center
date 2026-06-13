@@ -1,5 +1,7 @@
 projection;
+strict ( 2 );
 use draft;
+use side effects;
 
 define behavior for ZC_RAP200_CC_CASE alias CrisisCase
 {
