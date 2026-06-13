@@ -1,5 +1,21 @@
 @Metadata.layer: #CORE
 
+@UI.presentationVariant: [
+  {
+    sortOrder: [
+      {
+        by: 'CaseID',
+        direction: #ASC
+      }
+    ],
+    visualizations: [
+      {
+        type: #AS_LINEITEM
+      }
+    ]
+  }
+]
+
 @UI.headerInfo: {
   typeName: 'Crisis Case',
   typeNamePlural: 'Crisis Cases',
@@ -35,7 +51,7 @@ annotate view ZC_RAP200_CC_CASE with
       id: 'RecoveryOptionsFacet',
       purpose: #STANDARD,
       type: #LINEITEM_REFERENCE,
-      label: 'Generated Recovery Options',
+      label: 'Recovery Options',
       position: 30,
       targetElement: '_RecoveryOptions'
     }
@@ -49,7 +65,8 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.lineItem: [
     {
       position: 10,
-      label: 'Case ID'
+      label: 'Case ID',
+      importance: #HIGH
     }
   ]
   @UI.selectionField: [
@@ -71,7 +88,8 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.lineItem: [
     {
       position: 20,
-      label: 'Case Title'
+      label: 'Case Title',
+      importance: #HIGH
     },
     {
       position: 90,
@@ -129,11 +147,20 @@ annotate view ZC_RAP200_CC_CASE with
   RaceName;
 
   @EndUserText.label: 'Crisis Type'
-  @EndUserText.quickInfo: 'Allowed values: WEATHER, CRASH, LOGISTICS, COMPLIANCE.'
+  @EndUserText.quickInfo: 'Select WEATHER, CRASH, LOGISTICS, or COMPLIANCE.'
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZC_RAP200_CC_CTYPE_VH',
+        element: 'CrisisType'
+      }
+    }
+  ]
   @UI.lineItem: [
     {
       position: 30,
-      label: 'Crisis Type'
+      label: 'Crisis Type',
+      importance: #HIGH
     }
   ]
   @UI.selectionField: [
@@ -151,11 +178,20 @@ annotate view ZC_RAP200_CC_CASE with
   CrisisType;
 
   @EndUserText.label: 'Severity'
-  @EndUserText.quickInfo: 'Allowed values: LOW, MEDIUM, HIGH, CRITICAL.'
+  @EndUserText.quickInfo: 'Select LOW, MEDIUM, HIGH, or CRITICAL.'
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZC_RAP200_CC_SEV_VH',
+        element: 'Severity'
+      }
+    }
+  ]
   @UI.lineItem: [
     {
       position: 40,
-      label: 'Severity'
+      label: 'Severity',
+      importance: #HIGH
     }
   ]
   @UI.selectionField: [
@@ -177,7 +213,8 @@ annotate view ZC_RAP200_CC_CASE with
   @UI.lineItem: [
     {
       position: 50,
-      label: 'Status'
+      label: 'Status',
+      importance: #HIGH
     }
   ]
   @UI.fieldGroup: [

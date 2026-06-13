@@ -23,6 +23,7 @@ etag master LocalLastChangedAt
   draft determine action Prepare
   {
     validation RecoveryOption~validateScoreRange;
+    validation RecoveryOption~validateOptionRequired;
   }
 
   determination setInitialCaseData on modify { create; }
@@ -102,6 +103,11 @@ etag dependent by _CrisisCase
   validation validateScoreRange on save
   {
     field CostScore, TimeScore, RiskScore, FeasibilityScore;
+  }
+
+  validation validateOptionRequired on save
+  {
+    field OptionType, OptionText;
   }
 
   association _CrisisCase { with draft; }
