@@ -128,6 +128,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
     DATA(lo_dec_engine) = NEW zcl_rap200_cc_dec_engine( ).
     DATA(lo_score_srv)  = NEW zcl_rap200_cc_score_srv( ).
+    DATA(lo_log_srv)    = NEW zcl_rap200_cc_log_srv( ).
 
     READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
       ENTITY CrisisCase
@@ -141,14 +142,6 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       WITH CORRESPONDING #( keys )
       RESULT DATA(lt_existing_options).
 
-    " ------------------------------------------------------------------
-    " Step 1:
-    " If a case has no recovery options yet, generate default proposals
-    " from the decision engine.
-    "
-    " If options already exist, keep them. This supports manual recovery
-    " options entered by the user.
-    " ------------------------------------------------------------------
     LOOP AT keys INTO DATA(ls_key).
 
       READ TABLE lt_cases INTO DATA(ls_case)
@@ -162,6 +155,7 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
       LOOP AT lt_existing_options USING KEY entity INTO DATA(ls_existing_option)
         WHERE CaseUUID = ls_case-CaseUUID.
+
         lv_has_options = abap_true.
         EXIT.
 
@@ -220,12 +214,6 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
 
     ENDLOOP.
 
-    " ------------------------------------------------------------------
-    " Step 2:
-    " Reload recovery options after possible creation.
-    " Then score all options, pick the best one, update child options,
-    " and update the parent recommendation fields.
-    " ------------------------------------------------------------------
     READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
       ENTITY CrisisCase BY \_RecoveryOptions
       ALL FIELDS
@@ -300,13 +288,13 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
           CONTINUE.
         ENDIF.
 
-       DATA(lv_is_recommended) = VALUE zrap200_cc_opt-is_recommended( ).
-       DATA(lv_option_reason)  = VALUE zrap200_cc_opt-reason_text( ).
+        DATA(lv_is_recommended) = VALUE zrap200_cc_opt-is_recommended( ).
+        DATA(lv_option_reason)  = VALUE zrap200_cc_opt-reason_text( ).
 
         IF lv_update_option_id = ls_recommendation-option_id.
-  		    lv_is_recommended = 'X'.
-  		    lv_option_reason  = lv_reason_text.
-		ENDIF.
+          lv_is_recommended = 'X'.
+          lv_option_reason  = lv_reason_text.
+        ENDIF.
 
         MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
           ENTITY RecoveryOption
@@ -362,6 +350,60 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         )
         FAILED DATA(ls_failed_case_update)
         REPORTED DATA(ls_reported_case_update).
+
+      DATA(ls_log_entry) = lo_log_srv->build_recommendation_log(
+        is_log_entry = VALUE zcl_rap200_cc_log_srv=>ty_log_entry(
+          case_uuid               = ls_case_for_scoring-CaseUUID
+          case_id                 = ls_case_for_scoring-CaseID
+          crisis_type             = ls_case_for_scoring-CrisisType
+          severity                = ls_case_for_scoring-Severity
+          recommended_option_id   = ls_recommendation-option_id
+          recommended_option_type = ls_recommendation-option_type
+          recommended_score       = ls_recommendation-total_score
+          recommended_rating      = ls_recommendation-rating
+          reason_text             = lv_reason_text
+        )
+      ).
+
+      IF ls_log_entry-log_no IS NOT INITIAL.
+
+        MODIFY ENTITIES OF zi_rap200_cc_log
+          ENTITY DecisionLog
+          CREATE FIELDS (
+            CaseUUID
+            LogNo
+            CaseID
+            CrisisType
+            Severity
+            RecommendedOptionID
+            RecommendedOptionType
+            RecommendedScore
+            RecommendedRating
+            ReasonText
+            CreatedBy
+            CreatedAt
+          )
+          WITH VALUE #(
+            (
+              %cid                  = |LOG{ ls_log_entry-log_no }|
+              CaseUUID              = ls_log_entry-case_uuid
+              LogNo                 = ls_log_entry-log_no
+              CaseID                = ls_log_entry-case_id
+              CrisisType            = ls_log_entry-crisis_type
+              Severity              = ls_log_entry-severity
+              RecommendedOptionID   = ls_log_entry-recommended_option_id
+              RecommendedOptionType = ls_log_entry-recommended_option_type
+              RecommendedScore      = ls_log_entry-recommended_score
+              RecommendedRating     = ls_log_entry-recommended_rating
+              ReasonText            = ls_log_entry-reason_text
+              CreatedBy             = ls_log_entry-created_by
+              CreatedAt             = ls_log_entry-created_at
+            )
+          )
+          FAILED DATA(ls_failed_log_create)
+          REPORTED DATA(ls_reported_log_create).
+
+      ENDIF.
 
     ENDLOOP.
 

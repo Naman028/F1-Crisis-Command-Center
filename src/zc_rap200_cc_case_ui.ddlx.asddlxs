@@ -56,12 +56,20 @@ annotate view ZC_RAP200_CC_CASE with
       targetElement: '_ScoringGuide'
     },
     {
-      id: 'RecoveryOptionsFacet',
+  	  id: 'RecoveryOptionsFacet',
+  	  purpose: #STANDARD,
+  	  type: #LINEITEM_REFERENCE,
+  	  label: 'Recovery Options',
+  	  position: 40,
+  	  targetElement: '_RecoveryOptions'
+    }	  ,
+    {
+      id: 'DecisionLogsFacet',
       purpose: #STANDARD,
       type: #LINEITEM_REFERENCE,
-      label: 'Recovery Options',
-      position: 40,
-      targetElement: '_RecoveryOptions'
+      label: 'Decision Logs',
+      position: 50,
+      targetElement: '_DecisionLogs'
     }
   ]
 

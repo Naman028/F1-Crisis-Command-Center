@@ -4,8 +4,13 @@
 define root view entity ZC_RAP200_CC_CASE
   provider contract transactional_query
   as projection on ZI_RAP200_CC_CASE
+
   association [0..*] to ZC_RAP200_CC_SCORE_GUIDE as _ScoringGuide
     on $projection.CaseUUID = _ScoringGuide.CaseUUID
+
+  association [0..*] to ZC_RAP200_CC_LOG as _DecisionLogs
+    on $projection.CaseUUID = _DecisionLogs.CaseUUID
+
 {
   key CaseUUID,
 
@@ -30,5 +35,6 @@ define root view entity ZC_RAP200_CC_CASE
   LocalLastChangedAt,
 
   _RecoveryOptions : redirected to composition child ZC_RAP200_CC_OPT,
-  _ScoringGuide
+  _ScoringGuide,
+  _DecisionLogs
 }
