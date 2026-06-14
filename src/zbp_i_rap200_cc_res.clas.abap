@@ -1,0 +1,12 @@
+CLASS zbp_i_rap200_cc_res DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR BEHAVIOR OF zi_rap200_cc_res.
+
+ENDCLASS.
+
+
+CLASS zbp_i_rap200_cc_res IMPLEMENTATION.
+
+ENDCLASS.

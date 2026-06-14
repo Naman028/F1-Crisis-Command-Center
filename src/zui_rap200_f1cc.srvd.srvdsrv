@@ -4,6 +4,7 @@ define service ZUI_RAP200_F1CC {
   expose ZC_RAP200_CC_FACT        as CrisisFactor;
   expose ZC_RAP200_CC_OPT         as RecoveryOption;
   expose ZC_RAP200_CC_LOG         as DecisionLog;
+  expose ZC_RAP200_CC_CASE_RES    as ResourceAvailability;
   expose ZC_RAP200_CC_BOARD       as DecisionBoard;
   expose ZC_RAP200_CC_CTYPE_VH    as CrisisTypeValueHelp;
   expose ZC_RAP200_CC_SEV_VH      as SeverityValueHelp;

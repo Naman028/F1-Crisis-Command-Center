@@ -1,0 +1,125 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: {
+  typeName: 'Resource',
+  typeNamePlural: 'Resources',
+  title: {
+    type: #STANDARD,
+    value: 'ResourceName'
+  },
+  description: {
+    value: 'ResourceID'
+  }
+}
+annotate entity ZC_RAP200_CC_CASE_RES with
+{
+  @EndUserText.label: 'Case UUID'
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Resource ID'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'Resource ID'
+    }
+  ]
+  ResourceID;
+
+  @EndUserText.label: 'Case ID'
+  @UI.hidden: true
+  CaseID;
+
+  @EndUserText.label: 'Resource Name'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Resource Name'
+    }
+  ]
+  ResourceName;
+
+  @EndUserText.label: 'Type'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Type'
+    }
+  ]
+  ResourceType;
+
+  @EndUserText.label: 'Approval'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Approval'
+    }
+  ]
+  ApprovalStatus;
+
+  @EndUserText.label: 'Available'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Available'
+    }
+  ]
+  AvailableFlag;
+
+  @EndUserText.label: 'Lead Hours'
+  @UI.lineItem: [
+    {
+      position: 60,
+      label: 'Lead Hours'
+    }
+  ]
+  LeadHours;
+
+  @EndUserText.label: 'Base Cost'
+  @UI.lineItem: [
+    {
+      position: 70,
+      label: 'Base Cost'
+    }
+  ]
+  BaseCost;
+
+  @EndUserText.label: 'Currency'
+  @UI.lineItem: [
+    {
+      position: 80,
+      label: 'Currency'
+    }
+  ]
+  Currency;
+
+  @EndUserText.label: 'Performance Loss %'
+  @UI.lineItem: [
+    {
+      position: 90,
+      label: 'Perf. Loss %'
+    }
+  ]
+  PerformanceLossPct;
+
+  @EndUserText.label: 'Reliability Risk %'
+  @UI.lineItem: [
+    {
+      position: 100,
+      label: 'Risk %'
+    }
+  ]
+  ReliabilityRiskPct;
+
+  @EndUserText.label: 'CO2 KG'
+  @UI.lineItem: [
+    {
+      position: 110,
+      label: 'CO2 KG'
+    }
+  ]
+  Co2Kg;
+
+  @EndUserText.label: 'Last Changed At'
+  @UI.hidden: true
+  LastChangedAt;
+}
