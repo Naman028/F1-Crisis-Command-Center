@@ -5,5 +5,12 @@ define view entity ZC_RAP200_CC_FACT
   as select from ZI_RAP200_CC_FACT
 {
   key CaseUUID,
-  key FactorNo
+  key FactorNo,
+
+      CaseID,
+      FactorType,
+      ImpactLevel,
+      ImpactScore,
+      Description,
+      ActiveFlag
 }

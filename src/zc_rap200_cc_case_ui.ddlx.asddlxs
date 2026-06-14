@@ -56,13 +56,13 @@ annotate view ZC_RAP200_CC_CASE with
       targetElement: '_ScoringGuide'
     },
     {
-  	  id: 'RecoveryOptionsFacet',
-  	  purpose: #STANDARD,
-  	  type: #LINEITEM_REFERENCE,
-  	  label: 'Recovery Options',
-  	  position: 40,
-  	  targetElement: '_RecoveryOptions'
-    }	  ,
+      id: 'RecoveryOptionsFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Recovery Options',
+      position: 40,
+      targetElement: '_RecoveryOptions'
+    },
     {
       id: 'DecisionLogsFacet',
       purpose: #STANDARD,
@@ -70,6 +70,14 @@ annotate view ZC_RAP200_CC_CASE with
       label: 'Decision Logs',
       position: 50,
       targetElement: '_DecisionLogs'
+    },
+    {
+      id: 'CrisisFactorsFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Crisis Factors',
+      position: 60,
+      targetElement: '_CrisisFactors'
     }
   ]
 

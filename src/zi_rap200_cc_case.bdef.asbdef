@@ -54,7 +54,8 @@ etag master LocalLastChangedAt
                                              field RecommendedScore,
                                              field RecommendedRating,
                                              field RecommendedText,
-                                             entity _RecoveryOptions;
+                                             entity _RecoveryOptions,
+                                             entity _DecisionLogs;
   }
 
   mapping for zrap200_cc_case

@@ -1,0 +1,81 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: {
+  typeName: 'Crisis Factor',
+  typeNamePlural: 'Crisis Factors',
+  title: {
+    type: #STANDARD,
+    value: 'FactorType'
+  },
+  description: {
+    value: 'Description'
+  }
+}
+annotate entity ZC_RAP200_CC_FACT with
+{
+  @EndUserText.label: 'Case UUID'
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Factor No.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'No.'
+    }
+  ]
+  FactorNo;
+
+  @EndUserText.label: 'Case ID'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Case ID'
+    }
+  ]
+  CaseID;
+
+  @EndUserText.label: 'Factor Type'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Factor Type'
+    }
+  ]
+  FactorType;
+
+  @EndUserText.label: 'Impact Level'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Impact'
+    }
+  ]
+  ImpactLevel;
+
+  @EndUserText.label: 'Impact Score'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Score'
+    }
+  ]
+  ImpactScore;
+
+  @EndUserText.label: 'Description'
+  @UI.lineItem: [
+    {
+      position: 60,
+      label: 'Description'
+    }
+  ]
+  Description;
+
+  @EndUserText.label: 'Active'
+  @UI.lineItem: [
+    {
+      position: 70,
+      label: 'Active'
+    }
+  ]
+  ActiveFlag;
+}
