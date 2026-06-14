@@ -11,12 +11,6 @@ define root view entity ZC_RAP200_CC_CASE
   association [0..*] to ZC_RAP200_CC_LOG as _DecisionLogs
     on $projection.CaseUUID = _DecisionLogs.CaseUUID
 
-  association [0..*] to ZC_RAP200_CC_FACT as _CrisisFactors
-    on $projection.CaseUUID = _CrisisFactors.CaseUUID
-
-  association [0..*] to ZC_RAP200_CC_CASE_RES as _Resources
-    on $projection.CaseUUID = _Resources.CaseUUID
-
 {
   key CaseUUID,
 
@@ -41,8 +35,8 @@ define root view entity ZC_RAP200_CC_CASE
   LocalLastChangedAt,
 
   _RecoveryOptions : redirected to composition child ZC_RAP200_CC_OPT,
+  _CrisisFactors   : redirected to composition child ZC_RAP200_CC_FACT,
+  _CaseResources   : redirected to composition child ZC_RAP200_CC_CRES,
   _ScoringGuide,
-  _DecisionLogs,
-  _CrisisFactors,
-  _Resources
+  _DecisionLogs
 }

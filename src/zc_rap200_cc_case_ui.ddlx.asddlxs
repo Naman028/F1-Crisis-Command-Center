@@ -80,12 +80,12 @@ annotate view ZC_RAP200_CC_CASE with
       targetElement: '_CrisisFactors'
     },
     {
-      id: 'ResourcesFacet',
+      id: 'CaseResourcesFacet',
       purpose: #STANDARD,
       type: #LINEITEM_REFERENCE,
       label: 'Resources',
       position: 70,
-      targetElement: '_Resources'
+      targetElement: '_CaseResources'
     }
   ]
 

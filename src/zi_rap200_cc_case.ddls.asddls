@@ -2,7 +2,9 @@
 @EndUserText.label: 'F1 Crisis Case Interface View'
 define root view entity ZI_RAP200_CC_CASE
   as select from zrap200_cc_case
-  composition [0..*] of ZI_RAP200_CC_OPT as _RecoveryOptions
+  composition [0..*] of ZI_RAP200_CC_OPT  as _RecoveryOptions
+  composition [0..*] of ZI_RAP200_CC_FACT as _CrisisFactors
+  composition [0..*] of ZI_RAP200_CC_CRES as _CaseResources
   association [0..*] to ZI_RAP200_CC_LOG as _DecisionLogs
     on $projection.CaseUUID = _DecisionLogs.CaseUUID
 {
@@ -29,5 +31,7 @@ define root view entity ZI_RAP200_CC_CASE
       local_last_changed_at   as LocalLastChangedAt,
 
       _RecoveryOptions,
+      _CrisisFactors,
+      _CaseResources,
       _DecisionLogs
 }

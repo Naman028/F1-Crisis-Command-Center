@@ -3,7 +3,7 @@
 {
 "FROM":
 [
-"ZI_RAP200_CC_FACT"
+"ZI_RAP200_CC_CRES"
 ],
 "ASSOCIATED":
 [
@@ -12,7 +12,7 @@
 ],
 "BASE":
 [
-"ZI_RAP200_CC_FACT"
+"ZI_RAP200_CC_CRES"
 ],
 "ANNO_REF":
 [],

@@ -2,7 +2,7 @@
 @EndUserText.label: 'F1 Crisis Factor Interface View'
 define view entity ZI_RAP200_CC_FACT
   as select from zrap200_cc_fact
-  association [1..1] to ZI_RAP200_CC_CASE as _CrisisCase
+  association to parent ZI_RAP200_CC_CASE as _CrisisCase
     on $projection.CaseUUID = _CrisisCase.CaseUUID
 {
   key case_uuid    as CaseUUID,

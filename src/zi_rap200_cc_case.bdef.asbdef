@@ -14,6 +14,8 @@ etag master LocalLastChangedAt
   delete;
 
   association _RecoveryOptions { create; with draft; }
+  association _CrisisFactors   { create; with draft; }
+  association _CaseResources   { create; with draft; }
 
   draft action Edit;
   draft action Activate optimized;
@@ -55,6 +57,8 @@ etag master LocalLastChangedAt
                                              field RecommendedRating,
                                              field RecommendedText,
                                              entity _RecoveryOptions,
+                                             entity _CrisisFactors,
+                                             entity _CaseResources,
                                              entity _DecisionLogs;
   }
 
@@ -128,5 +132,72 @@ etag dependent by _CrisisCase
     Rating           = rating;
     IsRecommended    = is_recommended;
     ReasonText       = reason_text;
+  }
+}
+
+define behavior for ZI_RAP200_CC_FACT alias CrisisFactor
+persistent table zrap200_cc_fact
+draft table zrap200_cc_factd
+lock dependent by _CrisisCase
+authorization dependent by _CrisisCase
+etag dependent by _CrisisCase
+{
+  update;
+  delete;
+
+  field ( readonly : update )
+    CaseUUID,
+    FactorNo;
+
+  association _CrisisCase { with draft; }
+
+  mapping for zrap200_cc_fact
+  {
+    CaseUUID    = case_uuid;
+    FactorNo    = factor_no;
+    CaseID      = case_id;
+    FactorType  = factor_type;
+    ImpactLevel = impact_level;
+    ImpactScore = impact_score;
+    Description = description;
+    ActiveFlag  = active_flag;
+  }
+}
+
+define behavior for ZI_RAP200_CC_CRES alias CaseResource
+persistent table zrap200_cc_cres
+draft table zrap200_cc_cresd
+lock dependent by _CrisisCase
+authorization dependent by _CrisisCase
+etag dependent by _CrisisCase
+{
+  update;
+  delete;
+
+  field ( readonly : update )
+    CaseUUID,
+    ResourceNo;
+
+  association _CrisisCase { with draft; }
+
+  mapping for zrap200_cc_cres
+  {
+    CaseUUID           = case_uuid;
+    ResourceNo         = resource_no;
+    CaseID             = case_id;
+    ResourceID         = resource_id;
+    ResourceName       = resource_name;
+    ResourceType       = resource_type;
+    ApprovalStatus     = approval_status;
+    AvailableFlag      = available_flag;
+    LeadHours          = lead_hours;
+    BaseCost           = base_cost;
+    Currency           = currency;
+    PerformanceLossPct = performance_loss_pct;
+    ReliabilityRiskPct = reliability_risk_pct;
+    Co2Kg              = co2_kg;
+    FitScore           = fit_score;
+    SelectedFlag       = selected_flag;
+    ReasonText         = reason_text;
   }
 }

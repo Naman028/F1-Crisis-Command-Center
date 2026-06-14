@@ -1,6 +1,39 @@
 CLASS lhc_CrisisCase DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
+    TYPES:
+      BEGIN OF ty_factor_spec,
+        factor_no    TYPE zrap200_cc_fact-factor_no,
+        factor_type  TYPE zrap200_cc_fact-factor_type,
+        impact_level TYPE zrap200_cc_fact-impact_level,
+        impact_score TYPE zrap200_cc_fact-impact_score,
+        description  TYPE zrap200_cc_fact-description,
+        active_flag  TYPE zrap200_cc_fact-active_flag,
+      END OF ty_factor_spec.
+
+    TYPES tt_factor_specs TYPE STANDARD TABLE OF ty_factor_spec WITH EMPTY KEY.
+
+    TYPES:
+      BEGIN OF ty_resource_spec,
+        resource_no          TYPE zrap200_cc_cres-resource_no,
+        resource_id          TYPE zrap200_cc_cres-resource_id,
+        resource_name        TYPE zrap200_cc_cres-resource_name,
+        resource_type        TYPE zrap200_cc_cres-resource_type,
+        approval_status      TYPE zrap200_cc_cres-approval_status,
+        available_flag       TYPE zrap200_cc_cres-available_flag,
+        lead_hours           TYPE zrap200_cc_cres-lead_hours,
+        base_cost            TYPE zrap200_cc_cres-base_cost,
+        currency             TYPE zrap200_cc_cres-currency,
+        performance_loss_pct TYPE zrap200_cc_cres-performance_loss_pct,
+        reliability_risk_pct TYPE zrap200_cc_cres-reliability_risk_pct,
+        co2_kg               TYPE zrap200_cc_cres-co2_kg,
+        fit_score            TYPE zrap200_cc_cres-fit_score,
+        selected_flag        TYPE zrap200_cc_cres-selected_flag,
+        reason_text          TYPE zrap200_cc_cres-reason_text,
+      END OF ty_resource_spec.
+
+    TYPES tt_resource_specs TYPE STANDARD TABLE OF ty_resource_spec WITH EMPTY KEY.
+
     METHODS get_global_authorizations
       FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR CrisisCase
@@ -26,6 +59,22 @@ CLASS lhc_CrisisCase DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS get_current_user
       RETURNING
         VALUE(rv_user) TYPE zrap200_cc_case-created_by.
+
+    METHODS build_crisis_factors
+      IMPORTING
+        iv_case_id     TYPE zrap200_cc_case-case_id
+        iv_crisis_type TYPE zrap200_cc_case-crisis_type
+        iv_severity    TYPE zrap200_cc_case-severity
+      RETURNING
+        VALUE(rt_factors) TYPE tt_factor_specs.
+
+    METHODS build_case_resources
+      IMPORTING
+        iv_case_id     TYPE zrap200_cc_case-case_id
+        iv_crisis_type TYPE zrap200_cc_case-crisis_type
+        iv_severity    TYPE zrap200_cc_case-severity
+      RETURNING
+        VALUE(rt_resources) TYPE tt_resource_specs.
 
 ENDCLASS.
 
@@ -54,6 +103,467 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
   METHOD get_current_user.
 
     rv_user = cl_abap_context_info=>get_user_technical_name( ).
+
+  ENDMETHOD.
+
+
+  METHOD build_crisis_factors.
+
+    DATA(lv_base_score) = SWITCH i(
+      iv_severity
+      WHEN 'CRITICAL' THEN 95
+      WHEN 'HIGH'     THEN 85
+      WHEN 'MEDIUM'   THEN 65
+      WHEN 'LOW'      THEN 40
+      ELSE 55
+    ).
+
+    CASE iv_crisis_type.
+
+      WHEN 'WEATHER'.
+
+        rt_factors = VALUE #(
+          (
+            factor_no    = '001'
+            factor_type  = 'TRACK_CONDITION'
+            impact_level = iv_severity
+            impact_score = lv_base_score
+            description  = |Track condition risk generated for case { iv_case_id }.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '002'
+            factor_type  = 'RAIN_PROBABILITY'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 5
+            description  = |Weather uncertainty affects tyre and race strategy.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '003'
+            factor_type  = 'SAFETY_RISK'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 10
+            description  = |Safety risk considered for wet or changing race conditions.|
+            active_flag  = abap_true
+          )
+        ).
+
+      WHEN 'CRASH'.
+
+        rt_factors = VALUE #(
+          (
+            factor_no    = '001'
+            factor_type  = 'DAMAGE_SEVERITY'
+            impact_level = iv_severity
+            impact_score = lv_base_score
+            description  = |Crash damage severity generated for case { iv_case_id }.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '002'
+            factor_type  = 'PARTS_AVAILABILITY'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 8
+            description  = |Availability of replacement parts affects recovery decision.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '003'
+            factor_type  = 'REPAIR_TIME'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 12
+            description  = |Repair time pressure is considered before recommendation.|
+            active_flag  = abap_true
+          )
+        ).
+
+      WHEN 'LOGISTICS'.
+
+        rt_factors = VALUE #(
+          (
+            factor_no    = '001'
+            factor_type  = 'SHIPPING_DELAY'
+            impact_level = iv_severity
+            impact_score = lv_base_score
+            description  = |Shipping delay pressure generated for case { iv_case_id }.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '002'
+            factor_type  = 'SPARE_PART_ACCESS'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 7
+            description  = |Spare part access affects logistics recovery planning.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '003'
+            factor_type  = 'CREW_PRESSURE'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 11
+            description  = |Crew workload and time pressure are included in decision context.|
+            active_flag  = abap_true
+          )
+        ).
+
+      WHEN 'COMPLIANCE'.
+
+        rt_factors = VALUE #(
+          (
+            factor_no    = '001'
+            factor_type  = 'FIA_APPROVAL'
+            impact_level = iv_severity
+            impact_score = lv_base_score
+            description  = |FIA approval risk generated for case { iv_case_id }.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '002'
+            factor_type  = 'REGULATION_RISK'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 5
+            description  = |Regulation risk affects whether the option can be executed.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '003'
+            factor_type  = 'DOCUMENTATION'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 10
+            description  = |Documentation readiness is considered for compliance handling.|
+            active_flag  = abap_true
+          )
+        ).
+
+      WHEN OTHERS.
+
+        rt_factors = VALUE #(
+          (
+            factor_no    = '001'
+            factor_type  = 'GENERAL_RISK'
+            impact_level = iv_severity
+            impact_score = lv_base_score
+            description  = |General crisis risk generated for case { iv_case_id }.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '002'
+            factor_type  = 'EXECUTION_PRESSURE'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 5
+            description  = |Execution pressure affects recovery planning.|
+            active_flag  = abap_true
+          )
+          (
+            factor_no    = '003'
+            factor_type  = 'OPERATIONAL_IMPACT'
+            impact_level = iv_severity
+            impact_score = lv_base_score - 10
+            description  = |Operational impact is included in recommendation context.|
+            active_flag  = abap_true
+          )
+        ).
+
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD build_case_resources.
+
+    DATA(lv_primary_fit) = SWITCH i(
+      iv_severity
+      WHEN 'CRITICAL' THEN 96
+      WHEN 'HIGH'     THEN 90
+      WHEN 'MEDIUM'   THEN 78
+      WHEN 'LOW'      THEN 65
+      ELSE 72
+    ).
+
+    CASE iv_crisis_type.
+
+      WHEN 'WEATHER'.
+
+        rt_resources = VALUE #(
+          (
+            resource_no          = '001'
+            resource_id          = 'DYNWET001'
+            resource_name        = 'Wet Tyre Strategy Set'
+            resource_type        = 'TYRE'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 2
+            base_cost            = '18000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.50'
+            reliability_risk_pct = '4.00'
+            co2_kg               = '70.00'
+            fit_score            = lv_primary_fit
+            selected_flag        = abap_true
+            reason_text          = |Selected for weather crisis because tyre response is time critical.|
+          )
+          (
+            resource_no          = '002'
+            resource_id          = 'DYNMET002'
+            resource_name        = 'Weather Radar Support'
+            resource_type        = 'STRATEGY'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 1
+            base_cost            = '9000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '3.00'
+            co2_kg               = '20.00'
+            fit_score            = lv_primary_fit - 8
+            selected_flag        = abap_false
+            reason_text          = |Supports live weather monitoring and strategy updates.|
+          )
+          (
+            resource_no          = '003'
+            resource_id          = 'DYNSET003'
+            resource_name        = 'Setup Adjustment Crew'
+            resource_type        = 'CREW'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 3
+            base_cost            = '22000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '1.00'
+            reliability_risk_pct = '5.00'
+            co2_kg               = '55.00'
+            fit_score            = lv_primary_fit - 15
+            selected_flag        = abap_false
+            reason_text          = |Useful if weather requires setup change before session.|
+          )
+        ).
+
+      WHEN 'CRASH'.
+
+        rt_resources = VALUE #(
+          (
+            resource_no          = '001'
+            resource_id          = 'DYNFW001'
+            resource_name        = 'Front Wing Replacement Kit'
+            resource_type        = 'AERO'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 4
+            base_cost            = '85000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '5.00'
+            co2_kg               = '420.00'
+            fit_score            = lv_primary_fit
+            selected_flag        = abap_true
+            reason_text          = |Selected for crash crisis because aero replacement is fastest safe recovery.|
+          )
+          (
+            resource_no          = '002'
+            resource_id          = 'DYNSUS002'
+            resource_name        = 'Suspension Repair Kit'
+            resource_type        = 'MECHANICAL'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 6
+            base_cost            = '65000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '1.50'
+            reliability_risk_pct = '8.00'
+            co2_kg               = '210.00'
+            fit_score            = lv_primary_fit - 9
+            selected_flag        = abap_false
+            reason_text          = |Supports structural recovery after crash impact.|
+          )
+          (
+            resource_no          = '003'
+            resource_id          = 'DYNINS003'
+            resource_name        = 'Damage Inspection Crew'
+            resource_type        = 'CREW'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 2
+            base_cost            = '12000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '2.00'
+            co2_kg               = '40.00'
+            fit_score            = lv_primary_fit - 14
+            selected_flag        = abap_false
+            reason_text          = |Required to confirm safety before returning car to session.|
+          )
+        ).
+
+      WHEN 'LOGISTICS'.
+
+        rt_resources = VALUE #(
+          (
+            resource_no          = '001'
+            resource_id          = 'DYNSHP001'
+            resource_name        = 'Emergency Air Freight'
+            resource_type        = 'LOGISTICS'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 6
+            base_cost            = '65000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '10.00'
+            co2_kg               = '900.00'
+            fit_score            = lv_primary_fit
+            selected_flag        = abap_true
+            reason_text          = |Selected for logistics crisis because emergency freight reduces delivery delay.|
+          )
+          (
+            resource_no          = '002'
+            resource_id          = 'DYNLOC002'
+            resource_name        = 'Local Supplier Backup'
+            resource_type        = 'SUPPLIER'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 12
+            base_cost            = '38000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '2.00'
+            reliability_risk_pct = '12.00'
+            co2_kg               = '180.00'
+            fit_score            = lv_primary_fit - 8
+            selected_flag        = abap_false
+            reason_text          = |Useful if primary shipment cannot arrive before deadline.|
+          )
+          (
+            resource_no          = '003'
+            resource_id          = 'DYNTRK003'
+            resource_name        = 'Fast Track Customs Support'
+            resource_type        = 'TRANSPORT'
+            approval_status      = 'PENDING'
+            available_flag       = abap_true
+            lead_hours           = 8
+            base_cost            = '24000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '15.00'
+            co2_kg               = '130.00'
+            fit_score            = lv_primary_fit - 16
+            selected_flag        = abap_false
+            reason_text          = |Reduces customs delay but has approval dependency.|
+          )
+        ).
+
+      WHEN 'COMPLIANCE'.
+
+        rt_resources = VALUE #(
+          (
+            resource_no          = '001'
+            resource_id          = 'DYNFIA001'
+            resource_name        = 'FIA Documentation Package'
+            resource_type        = 'APPROVAL'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 3
+            base_cost            = '15000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '3.00'
+            co2_kg               = '25.00'
+            fit_score            = lv_primary_fit
+            selected_flag        = abap_true
+            reason_text          = |Selected for compliance crisis because documentation approval is mandatory.|
+          )
+          (
+            resource_no          = '002'
+            resource_id          = 'DYNREG002'
+            resource_name        = 'Regulation Review Engineer'
+            resource_type        = 'REGULATION'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 5
+            base_cost            = '18000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '5.00'
+            co2_kg               = '30.00'
+            fit_score            = lv_primary_fit - 7
+            selected_flag        = abap_false
+            reason_text          = |Checks legality risk before option execution.|
+          )
+          (
+            resource_no          = '003'
+            resource_id          = 'DYNSCR003'
+            resource_name        = 'Scrutineering Support Crew'
+            resource_type        = 'APPROVAL'
+            approval_status      = 'PENDING'
+            available_flag       = abap_true
+            lead_hours           = 7
+            base_cost            = '21000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '9.00'
+            co2_kg               = '45.00'
+            fit_score            = lv_primary_fit - 14
+            selected_flag        = abap_false
+            reason_text          = |Useful when FIA inspection support is required.|
+          )
+        ).
+
+      WHEN OTHERS.
+
+        rt_resources = VALUE #(
+          (
+            resource_no          = '001'
+            resource_id          = 'DYNGEN001'
+            resource_name        = 'General Recovery Crew'
+            resource_type        = 'CREW'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 4
+            base_cost            = '30000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '1.00'
+            reliability_risk_pct = '8.00'
+            co2_kg               = '100.00'
+            fit_score            = lv_primary_fit
+            selected_flag        = abap_true
+            reason_text          = |Selected as general recovery support for this crisis.|
+          )
+          (
+            resource_no          = '002'
+            resource_id          = 'DYNOPS002'
+            resource_name        = 'Operations Support Desk'
+            resource_type        = 'OPERATIONS'
+            approval_status      = 'APPROVED'
+            available_flag       = abap_true
+            lead_hours           = 2
+            base_cost            = '12000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '0.00'
+            reliability_risk_pct = '4.00'
+            co2_kg               = '20.00'
+            fit_score            = lv_primary_fit - 10
+            selected_flag        = abap_false
+            reason_text          = |Supports operational coordination for crisis handling.|
+          )
+          (
+            resource_no          = '003'
+            resource_id          = 'DYNBKP003'
+            resource_name        = 'Backup Parts Access'
+            resource_type        = 'PARTS'
+            approval_status      = 'PENDING'
+            available_flag       = abap_true
+            lead_hours           = 10
+            base_cost            = '42000.00'
+            currency             = 'EUR'
+            performance_loss_pct = '2.00'
+            reliability_risk_pct = '12.00'
+            co2_kg               = '160.00'
+            fit_score            = lv_primary_fit - 18
+            selected_flag        = abap_false
+            reason_text          = |Backup resource if primary recovery path becomes unavailable.|
+          )
+        ).
+
+    ENDCASE.
 
   ENDMETHOD.
 
@@ -141,6 +651,18 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
       ALL FIELDS
       WITH CORRESPONDING #( keys )
       RESULT DATA(lt_existing_options).
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase BY \_CrisisFactors
+      ALL FIELDS
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_factors).
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase BY \_CaseResources
+      ALL FIELDS
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_case_resources).
 
     LOOP AT keys INTO DATA(ls_key).
 
@@ -350,6 +872,140 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         )
         FAILED DATA(ls_failed_case_update)
         REPORTED DATA(ls_reported_case_update).
+
+      LOOP AT lt_existing_factors USING KEY entity INTO DATA(ls_existing_factor_delete)
+        WHERE CaseUUID = ls_case_for_scoring-CaseUUID.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisFactor
+          DELETE FROM VALUE #(
+            (
+              %tky = ls_existing_factor_delete-%tky
+            )
+          )
+          FAILED DATA(ls_failed_factor_delete)
+          REPORTED DATA(ls_reported_factor_delete).
+
+      ENDLOOP.
+
+      DATA(lt_generated_factors) = build_crisis_factors(
+        iv_case_id     = ls_case_for_scoring-CaseID
+        iv_crisis_type = ls_case_for_scoring-CrisisType
+        iv_severity    = ls_case_for_scoring-Severity
+      ).
+
+      IF lt_generated_factors IS NOT INITIAL.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_CrisisFactors
+          FIELDS (
+            FactorNo
+            CaseID
+            FactorType
+            ImpactLevel
+            ImpactScore
+            Description
+            ActiveFlag
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_case_for_scoring-%tky
+              %target = VALUE #(
+                FOR ls_generated_factor IN lt_generated_factors
+                (
+                  %cid        = |FAC{ ls_case_for_scoring-CaseID }{ ls_generated_factor-factor_no }|
+                  FactorNo    = ls_generated_factor-factor_no
+                  CaseID      = ls_case_for_scoring-CaseID
+                  FactorType  = ls_generated_factor-factor_type
+                  ImpactLevel = ls_generated_factor-impact_level
+                  ImpactScore = ls_generated_factor-impact_score
+                  Description = ls_generated_factor-description
+                  ActiveFlag  = ls_generated_factor-active_flag
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_factor_create)
+          REPORTED DATA(ls_reported_factor_create).
+
+      ENDIF.
+
+      LOOP AT lt_existing_case_resources USING KEY entity INTO DATA(ls_existing_resource_delete)
+        WHERE CaseUUID = ls_case_for_scoring-CaseUUID.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CaseResource
+          DELETE FROM VALUE #(
+            (
+              %tky = ls_existing_resource_delete-%tky
+            )
+          )
+          FAILED DATA(ls_failed_resource_delete)
+          REPORTED DATA(ls_reported_resource_delete).
+
+      ENDLOOP.
+
+      DATA(lt_generated_resources) = build_case_resources(
+        iv_case_id     = ls_case_for_scoring-CaseID
+        iv_crisis_type = ls_case_for_scoring-CrisisType
+        iv_severity    = ls_case_for_scoring-Severity
+      ).
+
+      IF lt_generated_resources IS NOT INITIAL.
+
+        MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+          ENTITY CrisisCase
+          CREATE BY \_CaseResources
+          FIELDS (
+            ResourceNo
+            CaseID
+            ResourceID
+            ResourceName
+            ResourceType
+            ApprovalStatus
+            AvailableFlag
+            LeadHours
+            BaseCost
+            Currency
+            PerformanceLossPct
+            ReliabilityRiskPct
+            Co2Kg
+            FitScore
+            SelectedFlag
+            ReasonText
+          )
+          WITH VALUE #(
+            (
+              %tky = ls_case_for_scoring-%tky
+              %target = VALUE #(
+                FOR ls_generated_resource IN lt_generated_resources
+                (
+                  %cid                  = |RES{ ls_case_for_scoring-CaseID }{ ls_generated_resource-resource_no }|
+                  ResourceNo            = ls_generated_resource-resource_no
+                  CaseID                = ls_case_for_scoring-CaseID
+                  ResourceID            = ls_generated_resource-resource_id
+                  ResourceName          = ls_generated_resource-resource_name
+                  ResourceType          = ls_generated_resource-resource_type
+                  ApprovalStatus        = ls_generated_resource-approval_status
+                  AvailableFlag         = ls_generated_resource-available_flag
+                  LeadHours             = ls_generated_resource-lead_hours
+                  BaseCost              = ls_generated_resource-base_cost
+                  Currency              = ls_generated_resource-currency
+                  PerformanceLossPct    = ls_generated_resource-performance_loss_pct
+                  ReliabilityRiskPct    = ls_generated_resource-reliability_risk_pct
+                  Co2Kg                 = ls_generated_resource-co2_kg
+                  FitScore              = ls_generated_resource-fit_score
+                  SelectedFlag          = ls_generated_resource-selected_flag
+                  ReasonText            = ls_generated_resource-reason_text
+                )
+              )
+            )
+          )
+          FAILED DATA(ls_failed_resource_create)
+          REPORTED DATA(ls_reported_resource_create).
+
+      ENDIF.
 
       DATA(ls_log_entry) = lo_log_srv->build_recommendation_log(
         is_log_entry = VALUE zcl_rap200_cc_log_srv=>ty_log_entry(
