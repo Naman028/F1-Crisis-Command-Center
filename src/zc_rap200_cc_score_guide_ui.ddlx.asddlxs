@@ -1,0 +1,82 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Scoring Guide',
+  typeNamePlural: 'Scoring Guide',
+  title: {
+    type: #STANDARD,
+    value: 'GuideTitle'
+  },
+  description: {
+    value: 'ScoreRange'
+  }
+}
+
+annotate view zc_rap200_cc_score_guide with
+{
+  @EndUserText.label: 'Guide ID'
+  @EndUserText.quickInfo: 'Technical guide category.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'Guide ID',
+      importance: #LOW
+    }
+  ]
+  guideid;
+
+  @EndUserText.label: 'Score Area'
+  @EndUserText.quickInfo: 'Score category used by the recommendation engine.'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Score Area',
+      importance: #HIGH
+    }
+  ]
+  guidetitle;
+
+  @EndUserText.label: 'Score Range'
+  @EndUserText.quickInfo: 'How to interpret the 0-100 score.'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Score Range',
+      importance: #HIGH
+    }
+  ]
+  scorerange;
+
+  @EndUserText.label: 'Meaning'
+  @EndUserText.quickInfo: 'Explanation of what a higher score means.'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Meaning',
+      importance: #HIGH
+    }
+  ]
+  meaning;
+
+  @EndUserText.label: 'Weight %'
+  @EndUserText.quickInfo: 'Weight used in the total score formula.'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Weight %',
+      importance: #MEDIUM
+    }
+  ]
+  weightpercent;
+
+  @EndUserText.label: 'Usage'
+  @EndUserText.quickInfo: 'How this guide is used in the app.'
+  @UI.lineItem: [
+    {
+      position: 60,
+      label: 'Usage',
+      importance: #MEDIUM
+    }
+  ]
+  usagetext;
+}
