@@ -12,71 +12,98 @@
   }
 }
 
-annotate view zc_rap200_cc_score_guide with
+annotate view ZC_RAP200_CC_SCORE_GUIDE with
 {
-  @EndUserText.label: 'Guide ID'
-  @EndUserText.quickInfo: 'Technical guide category.'
-  @UI.lineItem: [
+  @UI.facet: [
     {
-      position: 10,
-      label: 'Guide ID',
-      importance: #LOW
+      id: 'GuideDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Guide Details',
+      position: 10
     }
   ]
-  guideid;
+
+  @EndUserText.label: 'Guide ID'
+  @EndUserText.quickInfo: 'Technical guide category.'
+  @UI.hidden: true
+  GuideID;
 
   @EndUserText.label: 'Score Area'
   @EndUserText.quickInfo: 'Score category used by the recommendation engine.'
   @UI.lineItem: [
     {
-      position: 20,
+      position: 10,
       label: 'Score Area',
       importance: #HIGH
     }
   ]
-  guidetitle;
+  @UI.identification: [
+    {
+      position: 10,
+      label: 'Score Area'
+    }
+  ]
+  GuideTitle;
 
   @EndUserText.label: 'Score Range'
   @EndUserText.quickInfo: 'How to interpret the 0-100 score.'
   @UI.lineItem: [
     {
-      position: 30,
+      position: 20,
       label: 'Score Range',
       importance: #HIGH
     }
   ]
-  scorerange;
-
-  @EndUserText.label: 'Meaning'
-  @EndUserText.quickInfo: 'Explanation of what a higher score means.'
-  @UI.lineItem: [
+  @UI.identification: [
     {
-      position: 40,
-      label: 'Meaning',
-      importance: #HIGH
+      position: 20,
+      label: 'Score Range'
     }
   ]
-  meaning;
+  ScoreRange;
 
   @EndUserText.label: 'Weight %'
   @EndUserText.quickInfo: 'Weight used in the total score formula.'
   @UI.lineItem: [
     {
-      position: 50,
+      position: 30,
       label: 'Weight %',
+      importance: #HIGH
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 30,
+      label: 'Weight %'
+    }
+  ]
+  WeightPercent;
+
+  @EndUserText.label: 'Meaning'
+  @EndUserText.quickInfo: 'What a higher score means.'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Meaning',
       importance: #MEDIUM
     }
   ]
-  weightpercent;
+  @UI.identification: [
+    {
+      position: 40,
+      label: 'Meaning'
+    }
+  ]
+  Meaning;
 
   @EndUserText.label: 'Usage'
   @EndUserText.quickInfo: 'How this guide is used in the app.'
-  @UI.lineItem: [
+  @UI.identification: [
     {
-      position: 60,
-      label: 'Usage',
-      importance: #MEDIUM
+      position: 50,
+      label: 'Usage'
     }
   ]
-  usagetext;
+  UsageText;
 }
