@@ -300,13 +300,13 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
           CONTINUE.
         ENDIF.
 
-        DATA lv_is_recommended TYPE zrap200_cc_opt-is_recommended.
-        DATA lv_option_reason  TYPE zrap200_cc_opt-reason_text.
+       DATA(lv_is_recommended) = VALUE zrap200_cc_opt-is_recommended( ).
+       DATA(lv_option_reason)  = VALUE zrap200_cc_opt-reason_text( ).
 
         IF lv_update_option_id = ls_recommendation-option_id.
-          lv_is_recommended = 'X'.
-          lv_option_reason  = lv_reason_text.
-        ENDIF.
+  		    lv_is_recommended = 'X'.
+  		    lv_option_reason  = lv_reason_text.
+		ENDIF.
 
         MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
           ENTITY RecoveryOption
