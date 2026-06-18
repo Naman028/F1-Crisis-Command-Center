@@ -1,0 +1,117 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: {
+  typeName: 'Decision Log',
+  typeNamePlural: 'Decision Logs',
+  title: {
+    type: #STANDARD,
+    value: 'LogNo'
+  },
+  description: {
+    value: 'ReasonText'
+  }
+}
+annotate entity ZC_RAP200_CC_LOG with
+{
+  @EndUserText.label: 'Case UUID'
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Log No.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'Log No.'
+    }
+  ]
+  LogNo;
+
+  @EndUserText.label: 'Case ID'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Case ID'
+    }
+  ]
+  CaseID;
+
+  @EndUserText.label: 'Crisis Type'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Crisis Type'
+    }
+  ]
+  CrisisType;
+
+  @EndUserText.label: 'Severity'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Severity'
+    }
+  ]
+  Severity;
+
+  @EndUserText.label: 'Recommended Option ID'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Option ID'
+    }
+  ]
+  RecommendedOptionID;
+
+  @EndUserText.label: 'Recommended Option Type'
+  @UI.lineItem: [
+    {
+      position: 60,
+      label: 'Option Type'
+    }
+  ]
+  RecommendedOptionType;
+
+  @EndUserText.label: 'Score'
+  @UI.lineItem: [
+    {
+      position: 70,
+      label: 'Score'
+    }
+  ]
+  RecommendedScore;
+
+  @EndUserText.label: 'Rating'
+  @UI.lineItem: [
+    {
+      position: 80,
+      label: 'Rating'
+    }
+  ]
+  RecommendedRating;
+
+  @EndUserText.label: 'Reason'
+  @UI.lineItem: [
+    {
+      position: 90,
+      label: 'Reason'
+    }
+  ]
+  ReasonText;
+
+  @EndUserText.label: 'Created By'
+  @UI.lineItem: [
+    {
+      position: 100,
+      label: 'Created By'
+    }
+  ]
+  CreatedBy;
+
+  @EndUserText.label: 'Created At'
+  @UI.lineItem: [
+    {
+      position: 110,
+      label: 'Created At'
+    }
+  ]
+  CreatedAt;
+}

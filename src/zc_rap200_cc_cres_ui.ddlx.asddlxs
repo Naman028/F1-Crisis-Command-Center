@@ -1,0 +1,162 @@
+@Metadata.layer: #CORE
+@UI.headerInfo: {
+  typeName: 'Case Resource',
+  typeNamePlural: 'Case Resources',
+  title: {
+    type: #STANDARD,
+    value: 'ResourceName'
+  },
+  description: {
+    value: 'ReasonText'
+  }
+}
+annotate entity ZC_RAP200_CC_CRES with
+{
+  @EndUserText.label: 'Case UUID'
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Resource No.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'No.'
+    }
+  ]
+  ResourceNo;
+
+  @EndUserText.label: 'Case ID'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Case ID'
+    }
+  ]
+  CaseID;
+
+  @EndUserText.label: 'Resource ID'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Resource ID'
+    }
+  ]
+  ResourceID;
+
+  @EndUserText.label: 'Resource Name'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Resource Name'
+    }
+  ]
+  ResourceName;
+
+  @EndUserText.label: 'Resource Type'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Type'
+    }
+  ]
+  ResourceType;
+
+  @EndUserText.label: 'Approval Status'
+  @UI.lineItem: [
+    {
+      position: 60,
+      label: 'Approval'
+    }
+  ]
+  ApprovalStatus;
+
+  @EndUserText.label: 'Available'
+  @UI.lineItem: [
+    {
+      position: 70,
+      label: 'Available'
+    }
+  ]
+  AvailableFlag;
+
+  @EndUserText.label: 'Lead Hours'
+  @UI.lineItem: [
+    {
+      position: 80,
+      label: 'Lead Hours'
+    }
+  ]
+  LeadHours;
+
+  @EndUserText.label: 'Base Cost'
+  @UI.lineItem: [
+    {
+      position: 90,
+      label: 'Base Cost'
+    }
+  ]
+  BaseCost;
+
+  @EndUserText.label: 'Currency'
+  @UI.lineItem: [
+    {
+      position: 100,
+      label: 'Currency'
+    }
+  ]
+  Currency;
+
+  @EndUserText.label: 'Performance Loss %'
+  @UI.lineItem: [
+    {
+      position: 110,
+      label: 'Perf. Loss %'
+    }
+  ]
+  PerformanceLossPct;
+
+  @EndUserText.label: 'Reliability Risk %'
+  @UI.lineItem: [
+    {
+      position: 120,
+      label: 'Risk %'
+    }
+  ]
+  ReliabilityRiskPct;
+
+  @EndUserText.label: 'CO2 KG'
+  @UI.lineItem: [
+    {
+      position: 130,
+      label: 'CO2 KG'
+    }
+  ]
+  Co2Kg;
+
+  @EndUserText.label: 'Fit Score'
+  @UI.lineItem: [
+    {
+      position: 140,
+      label: 'Fit Score'
+    }
+  ]
+  FitScore;
+
+  @EndUserText.label: 'Selected'
+  @UI.lineItem: [
+    {
+      position: 150,
+      label: 'Selected'
+    }
+  ]
+  SelectedFlag;
+
+  @EndUserText.label: 'Reason'
+  @UI.lineItem: [
+    {
+      position: 160,
+      label: 'Reason'
+    }
+  ]
+  ReasonText;
+}

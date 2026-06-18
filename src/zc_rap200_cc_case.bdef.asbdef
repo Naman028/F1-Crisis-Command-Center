@@ -1,0 +1,47 @@
+projection;
+strict ( 2 );
+use draft;
+use side effects;
+
+define behavior for ZC_RAP200_CC_CASE alias CrisisCase
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use association _RecoveryOptions { create; with draft; }
+  use association _CrisisFactors   { create; with draft; }
+  use association _CaseResources   { create; with draft; }
+
+  use action generateAndRecommendOptions;
+}
+
+define behavior for ZC_RAP200_CC_OPT alias RecoveryOption
+{
+  use update;
+  use delete;
+
+  use association _CrisisCase { with draft; }
+}
+
+define behavior for ZC_RAP200_CC_FACT alias CrisisFactor
+{
+  use update;
+  use delete;
+
+  use association _CrisisCase { with draft; }
+}
+
+define behavior for ZC_RAP200_CC_CRES alias CaseResource
+{
+  use update;
+  use delete;
+
+  use association _CrisisCase { with draft; }
+}

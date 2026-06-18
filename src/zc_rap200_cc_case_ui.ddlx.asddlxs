@@ -1,0 +1,340 @@
+@Metadata.layer: #CORE
+
+@UI.presentationVariant: [
+  {
+    sortOrder: [
+      {
+        by: 'CaseID',
+        direction: #ASC
+      }
+    ],
+    visualizations: [
+      {
+        type: #AS_LINEITEM
+      }
+    ]
+  }
+]
+
+@UI.headerInfo: {
+  typeName: 'Crisis Case',
+  typeNamePlural: 'Crisis Cases',
+  title: {
+    type: #STANDARD,
+    value: 'CaseID'
+  },
+  description: {
+    value: 'CaseTitle'
+  }
+}
+
+annotate view ZC_RAP200_CC_CASE with
+{
+  @UI.facet: [
+    {
+      id: 'CrisisDetailsFacet',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Crisis Details',
+      position: 10,
+      targetQualifier: 'CrisisDetails'
+    },
+    {
+      id: 'RecommendationFacet',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Recommendation',
+      position: 20,
+      targetQualifier: 'Recommendation'
+    },
+    {
+      id: 'ScoringGuideFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Scoring Guide',
+      position: 30,
+      targetElement: '_ScoringGuide'
+    },
+    {
+      id: 'RecoveryOptionsFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Recovery Options',
+      position: 40,
+      targetElement: '_RecoveryOptions'
+    },
+    {
+      id: 'DecisionLogsFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Decision Logs',
+      position: 50,
+      targetElement: '_DecisionLogs'
+    },
+    {
+      id: 'CrisisFactorsFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Crisis Factors',
+      position: 60,
+      targetElement: '_CrisisFactors'
+    },
+    {
+      id: 'CaseResourcesFacet',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Resources',
+      position: 70,
+      targetElement: '_CaseResources'
+    }
+  ]
+
+  @UI.hidden: true
+  CaseUUID;
+
+  @EndUserText.label: 'Case ID'
+  @EndUserText.quickInfo: 'System-generated case number.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'Case ID',
+      importance: #HIGH
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 10
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 10
+    }
+  ]
+  CaseID;
+
+  @EndUserText.label: 'Case Title'
+  @EndUserText.quickInfo: 'Short title for the F1 crisis.'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Case Title',
+      importance: #HIGH
+    },
+    {
+      position: 90,
+      type: #FOR_ACTION,
+      dataAction: 'generateAndRecommendOptions',
+      label: 'Generate Recommendation'
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 20
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 10
+    },
+    {
+      position: 90,
+      type: #FOR_ACTION,
+      dataAction: 'generateAndRecommendOptions',
+      label: 'Generate Recommendation'
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 20
+    }
+  ]
+  CaseTitle;
+
+  @EndUserText.label: 'Race'
+  @EndUserText.quickInfo: 'Select the F1 race from value help.'
+  @UI.textArrangement: #TEXT_FIRST
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZC_RAP200_CC_RACE_VH',
+        element: 'RaceID'
+      },
+      useForValidation: true,
+      additionalBinding: [
+        {
+          localElement: 'RaceName',
+          element: 'RaceName',
+          usage: #RESULT
+        }
+      ]
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 30,
+      label: 'Race'
+    }
+  ]
+  RaceID;
+
+  @EndUserText.label: 'Race Name'
+  @EndUserText.quickInfo: 'Filled automatically from the selected race.'
+  @UI.hidden: true
+  RaceName;
+  
+  @EndUserText.label: 'Crisis Type'
+  @EndUserText.quickInfo: 'WEATHER, CRASH, LOGISTICS, COMPLIANCE.'
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZC_RAP200_CC_CTYPE_VH',
+        element: 'CrisisType'
+      }
+    }
+  ]
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Crisis Type',
+      importance: #HIGH
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 30
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 50
+    }
+  ]
+  CrisisType;
+
+  @EndUserText.label: 'Severity'
+  @EndUserText.quickInfo: 'Impact level: LOW, MEDIUM, HIGH, CRITICAL.'
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZC_RAP200_CC_SEV_VH',
+        element: 'Severity'
+      }
+    }
+  ]
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Severity',
+      importance: #HIGH
+    }
+  ]
+  @UI.selectionField: [
+    {
+      position: 40
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 60
+    }
+  ]
+  Severity;
+
+  @EndUserText.label: 'Status'
+  @EndUserText.quickInfo: 'Current system status of the case.'
+  @UI.lineItem: [
+    {
+      position: 50,
+      label: 'Status',
+      importance: #HIGH
+    }
+  ]
+  @UI.fieldGroup: [
+    {
+      qualifier: 'CrisisDetails',
+      position: 70
+    }
+  ]
+  Status;
+
+  @EndUserText.label: 'Recommended Option ID'
+  @EndUserText.quickInfo: 'ID of the backend-selected best option.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 10
+    }
+  ]
+  RecommendedOptionID;
+
+  @EndUserText.label: 'Recommended Option Type'
+  @EndUserText.quickInfo: 'Strategy type selected as best option.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 20
+    }
+  ]
+  RecommendedOptionType;
+
+  @EndUserText.label: 'Recommended Score'
+  @EndUserText.quickInfo: 'Weighted score from option factors.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 30
+    }
+  ]
+  RecommendedScore;
+
+  @EndUserText.label: 'Recommended Rating'
+  @EndUserText.quickInfo: 'Rating derived from recommended score.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 40
+    }
+  ]
+  RecommendedRating;
+
+  @EndUserText.label: 'Recommended Text'
+  @EndUserText.quickInfo: 'Explanation for the recommendation.'
+  @UI.fieldGroup: [
+    {
+      qualifier: 'Recommendation',
+      position: 50
+    }
+  ]
+  RecommendedText;
+
+  @EndUserText.label: 'Created By'
+  @EndUserText.quickInfo: 'Technical user who created this case.'
+  @UI.hidden: true
+  CreatedBy;
+
+  @EndUserText.label: 'Created At'
+  @EndUserText.quickInfo: 'Timestamp when this case was created.'
+  @UI.hidden: true
+  CreatedAt;
+
+  @EndUserText.label: 'Last Changed By'
+  @EndUserText.quickInfo: 'Technical user who last changed this case.'
+  @UI.hidden: true
+  LastChangedBy;
+
+  @EndUserText.label: 'Last Changed At'
+  @EndUserText.quickInfo: 'Timestamp of the last change.'
+  @UI.hidden: true
+  LastChangedAt;
+
+  @EndUserText.label: 'Local Last Changed At'
+  @EndUserText.quickInfo: 'RAP concurrency timestamp.'
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

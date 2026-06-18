@@ -5,5 +5,18 @@ define view entity ZC_RAP200_CC_LOG
   as select from ZI_RAP200_CC_LOG
 {
   key CaseUUID,
-  key LogNo
+  key LogNo,
+
+      CaseID,
+      CrisisType,
+      Severity,
+
+      RecommendedOptionID,
+      RecommendedOptionType,
+      RecommendedScore,
+      RecommendedRating,
+      ReasonText,
+
+      CreatedBy,
+      CreatedAt
 }

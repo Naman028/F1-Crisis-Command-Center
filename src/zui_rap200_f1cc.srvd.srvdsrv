@@ -1,8 +1,13 @@
 @EndUserText.label: 'F1 Crisis Service'
 define service ZUI_RAP200_F1CC {
-  expose ZC_RAP200_CC_CASE  as CrisisCase;
-  expose ZC_RAP200_CC_FACT  as CrisisFactor;
-  expose ZC_RAP200_CC_OPT   as RecoveryOption;
-  expose ZC_RAP200_CC_LOG   as DecisionLog;
-  expose ZC_RAP200_CC_BOARD as DecisionBoard;
+  expose ZC_RAP200_CC_CASE        as CrisisCase;
+  expose ZC_RAP200_CC_FACT        as CrisisFactor;
+  expose ZC_RAP200_CC_CRES        as CaseResource;
+  expose ZC_RAP200_CC_OPT         as RecoveryOption;
+  expose ZC_RAP200_CC_LOG         as DecisionLog;
+  expose ZC_RAP200_CC_BOARD       as DecisionBoard;
+  expose ZC_RAP200_CC_CTYPE_VH    as CrisisTypeValueHelp;
+  expose ZC_RAP200_CC_SEV_VH      as SeverityValueHelp;
+  expose ZC_RAP200_CC_SCORE_GUIDE as ScoringGuide;
+  expose ZC_RAP200_CC_RACE_VH     as RaceValueHelp;
 }

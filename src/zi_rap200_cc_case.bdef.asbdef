@@ -1,17 +1,213 @@
 managed implementation in class zbp_i_rap200_cc_case unique;
+strict ( 2 );
+with draft;
 
 define behavior for ZI_RAP200_CC_CASE alias CrisisCase
 persistent table zrap200_cc_case
-lock master
+draft table zrap200_cc_cased
+lock master total etag LocalLastChangedAt
+authorization master ( global )
+etag master LocalLastChangedAt
 {
   create;
   update;
   delete;
 
+  association _RecoveryOptions { create; with draft; }
+  association _CrisisFactors   { create; with draft; }
+  association _CaseResources   { create; with draft; }
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+
+  draft determine action Prepare
+  {
+    validation validateRaceID;
+    validation RecoveryOption~validateScoreRange;
+    validation RecoveryOption~validateOptionRequired;
+  }
+
+  determination setInitialCaseData on modify { create; }
+  determination setRaceNameFromRaceID on modify { create; update; field RaceID; }
+
+  validation validateRaceID on save
+  {
+    field RaceID;
+  }
+
   field ( readonly, numbering : managed ) CaseUUID;
+
+  field ( readonly )
+    CaseID,
+    RaceName,
+    Status,
+    RecommendedOptionID,
+    RecommendedOptionType,
+    RecommendedScore,
+    RecommendedRating,
+    RecommendedText,
+    CreatedBy,
+    CreatedAt,
+    LastChangedBy,
+    LastChangedAt,
+    LocalLastChangedAt;
+
+  action generateAndRecommendOptions result [1] entity ZI_RAP200_CC_CASE;
+
+  side effects
+  {
+    field RaceID affects field RaceName;
+
+    action generateAndRecommendOptions affects field Status,
+                                             field RecommendedOptionID,
+                                             field RecommendedOptionType,
+                                             field RecommendedScore,
+                                             field RecommendedRating,
+                                             field RecommendedText,
+                                             entity _RecoveryOptions,
+                                             entity _CrisisFactors,
+                                             entity _CaseResources,
+                                             entity _DecisionLogs;
+  }
 
   mapping for zrap200_cc_case
   {
-    CaseUUID = case_uuid;
+    CaseUUID              = case_uuid;
+    CaseID                = case_id;
+    CaseTitle             = case_title;
+    RaceID                = race_id;
+    RaceName              = race_name;
+    CrisisType            = crisis_type;
+    Severity              = severity;
+    Status                = status;
+    RecommendedOptionID   = recommended_option_id;
+    RecommendedOptionType = recommended_option_type;
+    RecommendedScore      = recommended_score;
+    RecommendedRating     = recommended_rating;
+    RecommendedText       = recommended_text;
+    CreatedBy             = created_by;
+    CreatedAt             = created_at;
+    LastChangedBy         = last_changed_by;
+    LastChangedAt         = last_changed_at;
+    LocalLastChangedAt    = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_RAP200_CC_OPT alias RecoveryOption
+persistent table zrap200_cc_opt
+draft table zrap200_cc_optd
+lock dependent by _CrisisCase
+authorization dependent by _CrisisCase
+etag dependent by _CrisisCase
+{
+  update;
+  delete;
+
+  field ( readonly : update )
+    CaseUUID,
+    OptionNo;
+
+  field ( readonly )
+    TotalScore,
+    Rating,
+    IsRecommended,
+    ReasonText;
+
+  validation validateScoreRange on save
+  {
+    field CostScore, TimeScore, RiskScore, FeasibilityScore;
+  }
+
+  validation validateOptionRequired on save
+  {
+    field OptionType, OptionText;
+  }
+
+  association _CrisisCase { with draft; }
+
+  mapping for zrap200_cc_opt
+  {
+    CaseUUID         = case_uuid;
+    OptionNo         = option_no;
+    OptionID         = option_id;
+    OptionType       = option_type;
+    OptionText       = option_text;
+    CostScore        = cost_score;
+    TimeScore        = time_score;
+    RiskScore        = risk_score;
+    FeasibilityScore = feasibility_score;
+    TotalScore       = total_score;
+    Rating           = rating;
+    IsRecommended    = is_recommended;
+    ReasonText       = reason_text;
+  }
+}
+
+define behavior for ZI_RAP200_CC_FACT alias CrisisFactor
+persistent table zrap200_cc_fact
+draft table zrap200_cc_factd
+lock dependent by _CrisisCase
+authorization dependent by _CrisisCase
+etag dependent by _CrisisCase
+{
+  update;
+  delete;
+
+  field ( readonly : update )
+    CaseUUID,
+    FactorNo;
+
+  association _CrisisCase { with draft; }
+
+  mapping for zrap200_cc_fact
+  {
+    CaseUUID    = case_uuid;
+    FactorNo    = factor_no;
+    CaseID      = case_id;
+    FactorType  = factor_type;
+    ImpactLevel = impact_level;
+    ImpactScore = impact_score;
+    Description = description;
+    ActiveFlag  = active_flag;
+  }
+}
+
+define behavior for ZI_RAP200_CC_CRES alias CaseResource
+persistent table zrap200_cc_cres
+draft table zrap200_cc_cresd
+lock dependent by _CrisisCase
+authorization dependent by _CrisisCase
+etag dependent by _CrisisCase
+{
+  update;
+  delete;
+
+  field ( readonly : update )
+    CaseUUID,
+    ResourceNo;
+
+  association _CrisisCase { with draft; }
+
+  mapping for zrap200_cc_cres
+  {
+    CaseUUID           = case_uuid;
+    ResourceNo         = resource_no;
+    CaseID             = case_id;
+    ResourceID         = resource_id;
+    ResourceName       = resource_name;
+    ResourceType       = resource_type;
+    ApprovalStatus     = approval_status;
+    AvailableFlag      = available_flag;
+    LeadHours          = lead_hours;
+    BaseCost           = base_cost;
+    Currency           = currency;
+    PerformanceLossPct = performance_loss_pct;
+    ReliabilityRiskPct = reliability_risk_pct;
+    Co2Kg              = co2_kg;
+    FitScore           = fit_score;
+    SelectedFlag       = selected_flag;
+    ReasonText         = reason_text;
   }
 }

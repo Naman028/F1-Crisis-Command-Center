@@ -1,0 +1,109 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Scoring Guide',
+  typeNamePlural: 'Scoring Guide',
+  title: {
+    type: #STANDARD,
+    value: 'GuideTitle'
+  },
+  description: {
+    value: 'ScoreRange'
+  }
+}
+
+annotate view ZC_RAP200_CC_SCORE_GUIDE with
+{
+  @UI.facet: [
+    {
+      id: 'GuideDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Guide Details',
+      position: 10
+    }
+  ]
+
+  @EndUserText.label: 'Guide ID'
+  @EndUserText.quickInfo: 'Technical guide category.'
+  @UI.hidden: true
+  GuideID;
+
+  @EndUserText.label: 'Score Area'
+  @EndUserText.quickInfo: 'Score category used by the recommendation engine.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      label: 'Score Area',
+      importance: #HIGH
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 10,
+      label: 'Score Area'
+    }
+  ]
+  GuideTitle;
+
+  @EndUserText.label: 'Score Range'
+  @EndUserText.quickInfo: 'How to interpret the 0-100 score.'
+  @UI.lineItem: [
+    {
+      position: 20,
+      label: 'Score Range',
+      importance: #HIGH
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 20,
+      label: 'Score Range'
+    }
+  ]
+  ScoreRange;
+
+  @EndUserText.label: 'Weight %'
+  @EndUserText.quickInfo: 'Weight used in the total score formula.'
+  @UI.lineItem: [
+    {
+      position: 30,
+      label: 'Weight %',
+      importance: #HIGH
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 30,
+      label: 'Weight %'
+    }
+  ]
+  WeightPercent;
+
+  @EndUserText.label: 'Meaning'
+  @EndUserText.quickInfo: 'What a higher score means.'
+  @UI.lineItem: [
+    {
+      position: 40,
+      label: 'Meaning',
+      importance: #MEDIUM
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 40,
+      label: 'Meaning'
+    }
+  ]
+  Meaning;
+
+  @EndUserText.label: 'Usage'
+  @EndUserText.quickInfo: 'How this guide is used in the app.'
+  @UI.identification: [
+    {
+      position: 50,
+      label: 'Usage'
+    }
+  ]
+  UsageText;
+}

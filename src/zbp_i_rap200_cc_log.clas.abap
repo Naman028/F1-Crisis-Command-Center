@@ -1,0 +1,12 @@
+CLASS zbp_i_rap200_cc_log DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR BEHAVIOR OF zi_rap200_cc_log.
+
+ENDCLASS.
+
+
+CLASS zbp_i_rap200_cc_log IMPLEMENTATION.
+
+ENDCLASS.

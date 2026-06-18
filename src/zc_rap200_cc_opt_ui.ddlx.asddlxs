@@ -1,0 +1,216 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Recovery Option',
+  typeNamePlural: 'Recovery Options',
+  title: {
+    type: #STANDARD,
+    value: 'OptionType'
+  },
+  description: {
+    value: 'OptionText'
+  }
+}
+
+annotate view ZC_RAP200_CC_OPT with
+{
+  @UI.facet: [
+    {
+      id: 'OptionDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Recovery Option Details',
+      position: 10
+    }
+  ]
+
+  @EndUserText.label: 'Option No'
+  @EndUserText.quickInfo: 'Sequence number.'
+  @UI.lineItem: [
+    {
+      position: 10,
+      importance: #HIGH,
+      label: 'No.'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 10,
+      label: 'Option No'
+    }
+  ]
+  OptionNo;
+
+  @EndUserText.label: 'Option ID'
+  @EndUserText.quickInfo: 'Backend-filled option ID.'
+  @UI.lineItem: [
+    {
+      position: 20,
+      importance: #MEDIUM,
+      label: 'Option ID'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 20,
+      label: 'Option ID'
+    }
+  ]
+  OptionID;
+
+  @EndUserText.label: 'Option Type'
+  @EndUserText.quickInfo: 'Short recovery strategy name.'
+  @UI.lineItem: [
+    {
+      position: 30,
+      importance: #HIGH,
+      label: 'Type'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 30,
+      label: 'Option Type'
+    }
+  ]
+  OptionType;
+
+  @EndUserText.label: 'Option Text'
+  @EndUserText.quickInfo: 'Detailed explanation of the recovery option.'
+  @UI.identification: [
+    {
+      position: 40,
+      label: 'Option Text'
+    }
+  ]
+  OptionText;
+
+  @EndUserText.label: 'Cost Score'
+  @EndUserText.quickInfo: '0-100. Higher means more cost-efficient.'
+  @UI.lineItem: [
+    {
+      position: 40,
+      importance: #HIGH,
+      label: 'Cost'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 50,
+      label: 'Cost Score (0-100)'
+    }
+  ]
+  CostScore;
+
+  @EndUserText.label: 'Time Score'
+  @EndUserText.quickInfo: '0-100. Higher means faster response.'
+  @UI.lineItem: [
+    {
+      position: 50,
+      importance: #HIGH,
+      label: 'Time'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 60,
+      label: 'Time Score (0-100)'
+    }
+  ]
+  TimeScore;
+
+  @EndUserText.label: 'Risk Control Score'
+  @EndUserText.quickInfo: '0-100. Higher means safer option.'
+  @UI.lineItem: [
+    {
+      position: 60,
+      importance: #HIGH,
+      label: 'Risk'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 70,
+      label: 'Risk Control Score (0-100)'
+    }
+  ]
+  RiskScore;
+
+  @EndUserText.label: 'Feasibility Score'
+  @EndUserText.quickInfo: '0-100. Higher means easier execution.'
+  @UI.lineItem: [
+    {
+      position: 70,
+      importance: #HIGH,
+      label: 'Feasible'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 80,
+      label: 'Feasibility Score (0-100)'
+    }
+  ]
+  FeasibilityScore;
+
+  @EndUserText.label: 'Total Score'
+  @EndUserText.quickInfo: 'Backend-calculated weighted score.'
+  @UI.lineItem: [
+    {
+      position: 80,
+      importance: #HIGH,
+      label: 'Total'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 90,
+      label: 'Total Score'
+    }
+  ]
+  TotalScore;
+
+  @EndUserText.label: 'Rating'
+  @EndUserText.quickInfo: 'Backend-calculated rating.'
+  @UI.lineItem: [
+    {
+      position: 90,
+      importance: #HIGH,
+      label: 'Rating'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 100,
+      label: 'Rating'
+    }
+  ]
+  Rating;
+
+  @EndUserText.label: 'Recommended'
+  @EndUserText.quickInfo: 'X means this option is recommended.'
+  @UI.lineItem: [
+    {
+      position: 100,
+      importance: #HIGH,
+      label: 'Rec.'
+    }
+  ]
+  @UI.identification: [
+    {
+      position: 110,
+      label: 'Recommended'
+    }
+  ]
+  IsRecommended;
+
+  @EndUserText.label: 'Reason'
+  @EndUserText.quickInfo: 'Backend-generated recommendation reason.'
+  @UI.identification: [
+    {
+      position: 120,
+      label: 'Reason'
+    }
+  ]
+  ReasonText;
+}

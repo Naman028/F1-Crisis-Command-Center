@@ -1,0 +1,30 @@
+managed implementation in class zbp_i_rap200_cc_log unique;
+strict ( 2 );
+
+define behavior for ZI_RAP200_CC_LOG alias DecisionLog
+persistent table zrap200_cc_log
+lock master
+authorization master ( global )
+{
+  create;
+
+  field ( readonly : update )
+    CaseUUID,
+    LogNo;
+
+  mapping for zrap200_cc_log
+  {
+    CaseUUID              = case_uuid;
+    LogNo                 = log_no;
+    CaseID                = case_id;
+    CrisisType            = crisis_type;
+    Severity              = severity;
+    RecommendedOptionID   = recommended_option_id;
+    RecommendedOptionType = recommended_option_type;
+    RecommendedScore      = recommended_score;
+    RecommendedRating     = recommended_rating;
+    ReasonText            = reason_text;
+    CreatedBy             = created_by;
+    CreatedAt             = created_at;
+  }
+}
