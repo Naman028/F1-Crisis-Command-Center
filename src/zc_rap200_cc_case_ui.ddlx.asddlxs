@@ -153,26 +153,39 @@ annotate view ZC_RAP200_CC_CASE with
   ]
   CaseTitle;
 
-  @EndUserText.label: 'Race ID'
-  @EndUserText.quickInfo: 'Race identifier, for example RACE015.'
+  @EndUserText.label: 'Race'
+  @EndUserText.quickInfo: 'Select the F1 race from value help.'
+  @UI.textArrangement: #TEXT_FIRST
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: {
+        name: 'ZC_RAP200_CC_RACE_VH',
+        element: 'RaceID'
+      },
+      useForValidation: true,
+      additionalBinding: [
+        {
+          localElement: 'RaceName',
+          element: 'RaceName',
+          usage: #RESULT
+        }
+      ]
+    }
+  ]
   @UI.fieldGroup: [
     {
       qualifier: 'CrisisDetails',
-      position: 30
+      position: 30,
+      label: 'Race'
     }
   ]
   RaceID;
 
   @EndUserText.label: 'Race Name'
-  @EndUserText.quickInfo: 'Name of the Grand Prix race.'
-  @UI.fieldGroup: [
-    {
-      qualifier: 'CrisisDetails',
-      position: 40
-    }
-  ]
+  @EndUserText.quickInfo: 'Filled automatically from the selected race.'
+  @UI.hidden: true
   RaceName;
-
+  
   @EndUserText.label: 'Crisis Type'
   @EndUserText.quickInfo: 'WEATHER, CRASH, LOGISTICS, COMPLIANCE.'
   @Consumption.valueHelpDefinition: [

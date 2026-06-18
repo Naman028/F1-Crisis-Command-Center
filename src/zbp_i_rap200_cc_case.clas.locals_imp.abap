@@ -48,6 +48,14 @@ CLASS lhc_CrisisCase DEFINITION INHERITING FROM cl_abap_behavior_handler.
       FOR DETERMINE ON MODIFY
       IMPORTING keys FOR CrisisCase~setInitialCaseData.
 
+    METHODS setRaceNameFromRaceID
+      FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR CrisisCase~setRaceNameFromRaceID.
+
+    METHODS validateRaceID
+      FOR VALIDATE ON SAVE
+      IMPORTING keys FOR CrisisCase~validateRaceID.
+
     METHODS get_next_case_id
       RETURNING
         VALUE(rv_case_id) TYPE zrap200_cc_case-case_id.
@@ -630,6 +638,132 @@ CLASS lhc_CrisisCase IMPLEMENTATION.
         REPORTED DATA(ls_reported_initial).
 
     ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD setRaceNameFromRaceID.
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase
+      FIELDS (
+        RaceID
+        RaceName
+      )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_cases).
+
+    DATA lt_update TYPE TABLE FOR UPDATE zi_rap200_cc_case.
+
+    LOOP AT lt_cases INTO DATA(ls_case).
+
+      IF ls_case-RaceID IS INITIAL.
+
+        IF ls_case-RaceName IS NOT INITIAL.
+          APPEND VALUE #(
+            %tky     = ls_case-%tky
+            RaceName = ''
+          ) TO lt_update.
+        ENDIF.
+
+        CONTINUE.
+
+      ENDIF.
+
+      SELECT SINGLE
+        FROM zrap200_cc_race
+        FIELDS race_name
+        WHERE race_id = @ls_case-RaceID
+          AND active_flag = @abap_true
+        INTO @DATA(lv_race_name).
+
+      IF sy-subrc <> 0.
+        CONTINUE.
+      ENDIF.
+
+      IF ls_case-RaceName = lv_race_name.
+        CONTINUE.
+      ENDIF.
+
+      APPEND VALUE #(
+        %tky     = ls_case-%tky
+        RaceName = lv_race_name
+      ) TO lt_update.
+
+    ENDLOOP.
+
+    IF lt_update IS NOT INITIAL.
+
+      MODIFY ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+        ENTITY CrisisCase
+        UPDATE FIELDS (
+          RaceName
+        )
+        WITH lt_update
+        FAILED DATA(ls_failed_race_name)
+        REPORTED DATA(ls_reported_race_name).
+
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD validateRaceID.
+
+    READ ENTITIES OF zi_rap200_cc_case IN LOCAL MODE
+      ENTITY CrisisCase
+      FIELDS (
+        RaceID
+      )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_cases).
+
+    LOOP AT lt_cases INTO DATA(ls_case).
+
+      IF ls_case-RaceID IS INITIAL.
+
+        APPEND VALUE #(
+          %tky = ls_case-%tky
+        ) TO failed-crisiscase.
+
+        APPEND VALUE #(
+          %tky = ls_case-%tky
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'Please select a valid F1 race from the Race value help.'
+                 )
+          %element-RaceID = if_abap_behv=>mk-on
+        ) TO reported-crisiscase.
+
+        CONTINUE.
+
+      ENDIF.
+
+      SELECT SINGLE
+        FROM zrap200_cc_race
+        FIELDS race_id
+        WHERE race_id = @ls_case-RaceID
+          AND active_flag = @abap_true
+        INTO @DATA(lv_valid_race_id).
+
+      IF sy-subrc <> 0.
+
+        APPEND VALUE #(
+          %tky = ls_case-%tky
+        ) TO failed-crisiscase.
+
+        APPEND VALUE #(
+          %tky = ls_case-%tky
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-error
+                   text     = 'Invalid Race. Please select a race from the Race value help.'
+                 )
+          %element-RaceID = if_abap_behv=>mk-on
+        ) TO reported-crisiscase.
+
+      ENDIF.
+
+    ENDLOOP.
 
   ENDMETHOD.
 

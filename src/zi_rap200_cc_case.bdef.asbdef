@@ -24,16 +24,24 @@ etag master LocalLastChangedAt
 
   draft determine action Prepare
   {
+    validation validateRaceID;
     validation RecoveryOption~validateScoreRange;
     validation RecoveryOption~validateOptionRequired;
   }
 
   determination setInitialCaseData on modify { create; }
+  determination setRaceNameFromRaceID on modify { create; update; field RaceID; }
+
+  validation validateRaceID on save
+  {
+    field RaceID;
+  }
 
   field ( readonly, numbering : managed ) CaseUUID;
 
   field ( readonly )
     CaseID,
+    RaceName,
     Status,
     RecommendedOptionID,
     RecommendedOptionType,
@@ -50,6 +58,8 @@ etag master LocalLastChangedAt
 
   side effects
   {
+    field RaceID affects field RaceName;
+
     action generateAndRecommendOptions affects field Status,
                                              field RecommendedOptionID,
                                              field RecommendedOptionType,

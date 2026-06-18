@@ -16,8 +16,12 @@ define root view entity ZC_RAP200_CC_CASE
 
   CaseID,
   CaseTitle,
+
+  @ObjectModel.text.element: [ 'RaceName' ]
   RaceID,
+
   RaceName,
+
   CrisisType,
   Severity,
   Status,
